@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verilo — Verify People. Build Trust.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+:root{--navy:#102A43;--teal:#00C2A8;--bg:#F3F6F9;--card:#fff;--tx:#102A43;--mut:#5b6f82;--ln:#dfe6ed;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1c2c;--card:#142f47;--tx:#f3f6f9;--mut:#9fb3c6;--ln:#24435f}}
+*{box-sizing:border-box}[hidden]{display:none!important}html{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;line-height:1.45}
+header{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+header b{flex:1;font-size:18px}header small{opacity:.8}
+header button{background:none;border:1px solid #ffffff55;color:#fff;border-radius:8px;padding:6px 10px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--ln)}
+nav button,.seg button{white-space:nowrap;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:99px;padding:8px 14px;font-size:14px}
+nav button.on,.seg button.on{background:var(--navy);color:#fff}.seg{display:flex;gap:6px;margin:10px 0}.seg button{flex:1}
+main{max-width:640px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
+.mut{color:var(--mut);font-size:13px}label{font-size:13px;color:var(--mut);font-weight:600;display:block;margin-top:6px}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--ln);border-radius:10px;font:inherit;background:var(--card);color:var(--tx);margin:4px 0 6px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-weight:400}.chk input{width:auto;margin-top:3px}
+button.btn{background:var(--teal);color:var(--navy);font-weight:700;border:0;border-radius:10px;padding:12px 16px;font-size:15px;margin:6px 6px 0 0}
+button.alt{background:transparent;border:2px solid var(--teal);color:var(--tx)}button.red{background:var(--bad);color:#fff}
+.login{max-width:400px;margin:6vh auto;padding:16px}
+.row{display:flex;gap:12px;align-items:center}.av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:var(--teal);display:grid;place-items:center;font-weight:800;flex:none}
+.badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;display:inline-block}
+.b-v{background:#d9f7f1;color:#00695c}.b-r{background:#fdf0cf;color:#b7791f}.b-u{background:#e8edf2;color:#4a5d70}.b-x{background:#fbe0dc;color:#c0392b}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;max-width:90%;z-index:9}
+#toast.show{opacity:1}#toast.bad{background:var(--bad)}
+#modal{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-end;justify-content:center;z-index:6}
+#modal>div{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+</style></head><body>
+<section class="login" id="auth">
+<h1 style="margin-bottom:0">Verilo</h1><p class="mut" style="margin-top:2px">Verify People. Build Trust.</p>
+<div class="seg"><button id="mLogin" class="on">Log in</button><button id="mSign">Sign up</button></div>
+<div id="signF" hidden>
+<select id="role"><option value="worker">I am a worker</option><option value="employer">I am an employer</option></select>
+<input id="nm" placeholder="Full name" autocomplete="name">
+<input id="ph" type="tel" placeholder="Phone, e.g. 08012345678" autocomplete="tel">
+<select id="stt"></select><input id="cty" placeholder="City or town">
+<select id="et" hidden><option value="household">Household</option><option value="business">Business</option></select>
+<label class="chk"><input type="checkbox" id="terms"> I agree to the Terms and Privacy Policy (NDPA)</label></div>
+<input id="em" type="email" placeholder="Email" autocomplete="username">
+<input id="pw" type="password" placeholder="Password (8 or more characters)" autocomplete="current-password">
+<button class="btn" id="go" style="width:100%">Log in</button>
+<p class="mut">Verification means documents were checked by an authorised admin. It does not guarantee a person’s behaviour or safety.</p></section>
+<div id="app" hidden><header><b>Verilo</b><small id="who"></small><button id="out">Log out</button></header>
+<nav id="tabs"></nav><main id="view"></main></div>
+<div id="modal" hidden></div><div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const sb=supabase.createClient('https://maeraxyuwiwnlujctlzt.supabase.co','sb_publishable_gLotKP2jJGgtYaGD44bcmg_3K00b_qK');
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast=(m,bad)=>{const t=$('toast');t.textContent=m;t.className='show'+(bad?' bad':'');setTimeout(()=>t.className='',4000)};
+const guard=async fn=>{try{await fn()}catch(e){toast(e.message||String(e),true)}};
+const rpc=async(n,a)=>{const{data,error}=await sb.rpc(n,a);if(error)throw error;return data};
+const num=v=>v===''||v==null?null:Number(v);
+const STN=["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT (Abuja)","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
+const VL={unverified:'Unverified',under_review:'Under review',verified:'Verified',rejected:'Rejected'},VC={verified:'b-v',under_review:'b-r',unverified:'b-u',rejected:'b-x'};
+const badge=s=>`<span class="badge ${VC[s]||'b-u'}">${esc(VL[s]||s)}</span>`;
+const opts=(a,sel,k,n)=>a.map(x=>`<option value="${esc(x[k])}"${String(x[k])===String(sel)?' selected':''}>${esc(x[n])}</option>`).join('');
+const ini=n=>String(n||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+let me,W,ST=[],CT=[],mode='login';
+
+$('stt').innerHTML='<option value="">State</option>'+STN.map(s=>`<option>${esc(s)}</option>`).join('');
+$('role').onchange=()=>$('et').hidden=$('role').value!=='employer';
+function setMode(m){mode=m;$('signF').hidden=m!=='sign';$('mLogin').className=m==='login'?'on':'';$('mSign').className=m==='sign'?'on':'';$('go').textContent=m==='login'?'Log in':'Create account'}
+$('mLogin').onclick=()=>setMode('login');$('mSign').onclick=()=>setMode('sign');
+$('go').onclick=()=>guard(async()=>{
+  const email=$('em').value.trim(),password=$('pw').value;
+  if(mode==='login'){const{data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;return enter(data.user)}
+  if(!$('terms').checked)throw new Error('Please accept the Terms and Privacy Policy.');
+  if(!$('nm').value.trim()||!$('stt').value)throw new Error('Enter your name and choose your state.');
+  const role=$('role').value;
+  const{data,error}=await sb.auth.signUp({email,password,options:{data:{role,full_name:$('nm').value.trim(),phone:$('ph').value.trim(),state:$('stt').value,city:$('cty').value.trim(),employer_type:role==='employer'?$('et').value:'',accepted_terms:true}}});
+  if(error){throw new Error(/Database error/i.test(error.message)?'Could not create the account. Check your phone number format (e.g. 08012345678) and try again.':error.message)}
+  if(data.session)return enter(data.user);
+  toast('Account created. Check your email to confirm, then log in.');setMode('login');
+});
+$('out').onclick=async()=>{await sb.auth.signOut();location.reload()};
+sb.auth.getSession().then(({data})=>{if(data.session)guard(()=>enter(data.session.user))});
+
+async function enter(u){
+  const{data:p,error}=await sb.from('profiles').select('*').eq('id',u.id).single();if(error)throw error;
+  if(p.role==='admin'){await sb.auth.signOut();throw new Error('Admins should use the admin website.')}
+  if(p.status!=='active'){await sb.auth.signOut();throw new Error('This account is not active.')}
+  me=p;
+  const[s,c]=await Promise.all([sb.from('states').select('id,name').order('name'),sb.from('categories').select('id,slug,name').eq('active',true).order('name')]);
+  ST=s.data||[];CT=c.data||[];
+  $('auth').hidden=true;$('app').hidden=false;$('who').textContent=p.full_name;
+  const T=TABS[p.role];$('tabs').innerHTML=T.map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('');go(T[0][0]);
+}
+const TABS={worker:[['wp','My profile'],['wv','Verification'],['wr','Job requests']],employer:[['ef','Find workers'],['er','My requests']]};
+const R={wp:wProfile,wv:wVerify,wr:wReq,ef:eFind,er:eReq};
+function go(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('view').innerHTML='<p class="mut">Loading…</p>';guard(R[t])}
+$('tabs').onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.t)};
+async function loadW(){const{data,error}=await sb.from('worker_profiles').select('*').eq('user_id',me.id).maybeSingle();if(error)throw error;W=data}
+
+/* ---------- WORKER ---------- */
+async function fillL(sid,sel){const el=$('pl');if(!sid){el.innerHTML='<option value="">Choose state first</option>';return}
+  const{data}=await sb.from('lgas').select('id,name').eq('state_id',sid).order('name');el.innerHTML='<option value="">Choose LGA</option>'+opts(data||[],sel,'id','name')}
+async function wProfile(){
+  await loadW();const defS=W?W.state_id:(ST.find(s=>s.name===me.state)||{}).id;
+  const AV=[['available','Available'],['busy','Busy'],['unavailable','Not available']].map(a=>({id:a[0],name:a[1]}));
+  $('view').innerHTML=`<div class="card"><b>${esc(me.full_name)}</b> ${W?badge(W.verification):''}<p class="mut">${W?'Keep your profile up to date.':'Complete your profile so employers can find you.'}</p>
+  <label>Occupation</label><select id="pc"><option value="">Choose…</option>${opts(CT,W&&W.category_id,'id','name')}</select>
+  <label>State</label><select id="ps"><option value="">Choose…</option>${opts(ST,defS,'id','name')}</select>
+  <label>LGA</label><select id="pl"></select>
+  <label>City or town</label><input id="pcity" value="${esc((W&&W.city)||me.city||'')}">
+  <label>Headline (max 80 characters)</label><input id="phd" maxlength="80" value="${esc(W&&W.headline||'')}">
+  <label>About you (max 800 characters)</label><textarea id="pbio" rows="4" maxlength="800">${esc(W&&W.bio||'')}</textarea>
+  <label>Years of experience</label><input id="pyr" type="number" min="0" max="60" value="${esc(W&&W.years_experience!=null?W.years_experience:'')}">
+  <label>Availability</label><select id="pav">${opts(AV,W&&W.availability,'id','name')}</select>
+  <label class="chk"><input type="checkbox" id="pvis" ${(!W||W.is_visible)?'checked':''}> Show my profile to employers</label>
+  <button class="btn" id="psave">Save profile</button></div>`;
+  fillL(defS,W&&W.lga_id);$('ps').onchange=()=>fillL($('ps').value,null);
+  $('psave').onclick=()=>guard(async()=>{
+    const row={category_id:num($('pc').value),state_id:num($('ps').value),lga_id:num($('pl').value),city:$('pcity').value.trim()||null,headline:$('phd').value.trim()||null,bio:$('pbio').value.trim()||null,years_experience:num($('pyr').value),availability:$('pav').value,is_visible:$('pvis').checked};
+    if(!row.category_id||!row.state_id)throw new Error('Choose your occupation and state.');
+    const{error}=W?await sb.from('worker_profiles').update(row).eq('user_id',me.id):await sb.from('worker_profiles').insert({user_id:me.id,...row});
+    if(error)throw error;toast('Profile saved');wProfile();
+  });
+}
+async function upl(f,tag){const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=`${me.id}/${tag}-${Date.now()}.${ext}`;
+  const{error}=await sb.storage.from('id-documents').upload(path,f,{contentType:f.type});if(error)throw error;return path}
+async function wVerify(){
+  await loadW();
+  if(!W){$('view').innerHTML='<div class="card">Please complete and save your profile first (My profile tab).</div>';return}
+  const{data:L}=await sb.from('verification_requests').select('*').eq('worker_id',me.id).order('id',{ascending:false}).limit(1);
+  const last=(L||[])[0],pending=last&&last.status==='submitted',can=W.verification!=='verified'&&!pending;
+  let h=`<div class="card"><b>Your verification</b> ${badge(W.verification)}`;
+  if(W.verification==='verified')h+='<p>Your documents were checked by a Verilo admin. This does not guarantee behaviour or safety.</p>';
+  if(pending)h+='<p>Your documents are with our team for review. You will get a notification when there is an update.</p>';
+  if(last&&last.admin_note&&!pending)h+=`<p class="mut">Message from the reviewer: ${esc(last.admin_note)}</p>`;
+  h+='</div>';
+  if(can)h+=`<div class="card"><b>Submit documents</b><p class="mut">Free. Photos are stored privately. Only authorised Verilo admins can view them, and they never appear on your profile.</p>
+  <label>ID type</label><select id="vt"><option value="nin_slip">NIN slip</option><option value="voters_card">Voter’s card</option><option value="drivers_licence">Driver’s licence</option><option value="intl_passport">International passport</option></select>
+  <label>Photo of your ID (max 5 MB)</label><input id="vid" type="file" accept="image/*,application/pdf">
+  <label>A clear selfie (max 5 MB)</label><input id="vsf" type="file" accept="image/*">
+  <label class="chk"><input type="checkbox" id="vc"> I consent to Verilo checking my documents and contacting my references.</label>
+  <button class="btn" id="vgo">Submit for review</button></div>`;
+  if(last&&last.status==='rejected')h+=`<div class="card"><b>Appeal this decision</b><textarea id="apm" rows="3" placeholder="Explain why the decision should be reviewed (10 or more characters)"></textarea><button class="btn alt" id="apgo">Send appeal</button></div>`;
+  $('view').innerHTML=h;
+  if($('vgo'))$('vgo').onclick=()=>guard(async()=>{
+    const a=$('vid').files[0],b=$('vsf').files[0];
+    if(!a||!b)throw new Error('Choose both your ID photo and a selfie.');
+    if(!$('vc').checked)throw new Error('Consent is needed before verification.');
+    if(a.size>5242880||b.size>5242880)throw new Error('Each file must be under 5 MB.');
+    $('vgo').disabled=true;toast('Uploading…');
+    const p1=await upl(a,'id'),p2=await upl(b,'selfie');
+    await rpc('submit_verification',{p_id_type:$('vt').value,p_id_doc_path:p1,p_selfie_path:p2,p_consent:true});
+    toast('Submitted for review');wVerify();
+  });
+  if($('apgo'))$('apgo').onclick=()=>guard(async()=>{await rpc('file_appeal',{p_verification_id:last.id,p_message:$('apm').value.trim()});toast('Appeal sent');wVerify()});
+}
+async function wReq(){
+  const{data,error}=await sb.from('hiring_requests').select('*').eq('worker_id',me.id).order('id',{ascending:false});if(error)throw error;
+  $('view').innerHTML=(data.length?'':'<div class="card">No job requests yet.</div>')+data.map(r=>`<div class="card"><b>${esc(r.title)}</b> <span class="badge b-u">${esc(r.status)}</span><p>${esc(r.description||'')}</p><div class="mut">${esc(r.location||'')} ${r.start_date?'· Start '+esc(r.start_date):''} ${r.pay_offer_ngn!=null?'· ₦'+Number(r.pay_offer_ngn).toLocaleString():''}</div>${r.status==='pending'?`<button class="btn" data-act="acc" data-id="${r.id}">Accept</button><button class="btn alt" data-act="dec" data-id="${r.id}">Decline</button>`:''}</div>`).join('');
+}
+
+/* ---------- EMPLOYER ---------- */
+let F={state:'',cat:'',avail:'',ver:false,q:'',off:0};
+function eFind(){
+  F.off=0;
+  $('view').innerHTML=`<div class="card"><input id="fq" placeholder="Search name or skill" value="${esc(F.q)}">
+  <select id="fs"><option value="">All of Nigeria</option>${STN.map(s=>`<option${F.state===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
+  <select id="fc"><option value="">All occupations</option>${opts(CT,F.cat,'slug','name')}</select>
+  <select id="fa"><option value="">Any availability</option><option value="available">Available now</option></select>
+  <label class="chk"><input type="checkbox" id="fv" ${F.ver?'checked':''}> Verified workers only</label>
+  <button class="btn" id="fgo">Search</button></div><div id="res"></div>`;
+  $('fgo').onclick=()=>{F={state:$('fs').value,cat:$('fc').value,avail:$('fa').value,ver:$('fv').checked,q:$('fq').value.trim(),off:0};guard(search)};
+  guard(search);
+}
+async function search(){
+  const d=await rpc('search_workers',{p_state:F.state||null,p_category_slug:F.cat||null,p_availability:F.avail||null,p_verified_only:F.ver,p_query:F.q||null,p_limit:20,p_offset:F.off});
+  const tot=d.length?Number(d[0].total_count):0;
+  $('res').innerHTML=`<p class="mut">${tot} worker${tot===1?'':'s'} found</p>`+d.map(w=>`<div class="card"><div class="row"><div class="av">${esc(ini(w.full_name))}</div><div style="flex:1"><b>${esc(w.full_name)}</b><div class="mut">${esc(w.category||'')} · ${esc([w.city,w.lga,w.state].filter(Boolean).join(', '))}</div>${w.headline?`<div>${esc(w.headline)}</div>`:''}<div style="margin-top:4px">${badge(w.verification_status)} <span class="mut">${w.years_experience!=null?esc(w.years_experience)+' yrs · ':''}${w.availability==='available'?'Available':esc(w.availability)}</span></div></div></div><button class="btn" data-act="hire" data-id="${esc(w.user_id)}" data-n="${esc(w.full_name)}">Send hiring request</button></div>`).join('')+
+  `<div>${F.off>0?'<button class="btn alt" data-act="pg" data-o="-20">← Previous</button>':''}${F.off+20<tot?'<button class="btn alt" data-act="pg" data-o="20">Next →</button>':''}</div>`;
+}
+function openHire(id,name){
+  const m=$('modal');m.hidden=false;
+  m.innerHTML=`<div><b>Hiring request for ${esc(name)}</b><label>Job title</label><input id="ht" maxlength="100" placeholder="e.g. Weekly house cleaning"><label>Details</label><textarea id="hd" rows="3" maxlength="1000"></textarea><label>Start date</label><input id="hs" type="date"><label>Location</label><input id="hl" maxlength="150" placeholder="Area, city, state"><label>Pay offer (₦)</label><input id="hp" type="number" min="0"><p class="mut">Keep all communication and payment on Verilo. Never share OTP codes or pay deposits to someone you have not met.</p><button class="btn" id="hsend">Send request</button><button class="btn alt" id="hcancel">Cancel</button></div>`;
+  $('hcancel').onclick=()=>{m.hidden=true};
+  $('hsend').onclick=()=>guard(async()=>{
+    if($('ht').value.trim().length<3)throw new Error('Enter a job title.');
+    await rpc('send_hire_request',{p_worker:id,p_title:$('ht').value.trim(),p_description:$('hd').value.trim()||null,p_start:$('hs').value||null,p_location:$('hl').value.trim()||null,p_pay:num($('hp').value)});
+    m.hidden=true;toast('Request sent');
+  });
+}
+async function eReq(){
+  const{data,error}=await sb.from('hiring_requests').select('*').eq('employer_id',me.id).order('id',{ascending:false});if(error)throw error;
+  const ids=[...new Set(data.map(r=>r.worker_id))];let nm={};
+  if(ids.length){const{data:w}=await sb.from('public_workers').select('user_id,full_name').in('user_id',ids);nm=Object.fromEntries((w||[]).map(x=>[x.user_id,x.full_name]))}
+  $('view').innerHTML=(data.length?'':'<div class="card">You have not sent any requests yet.</div>')+data.map(r=>`<div class="card"><b>${esc(r.title)}</b> <span class="badge b-u">${esc(r.status)}</span><div class="mut">To ${esc(nm[r.worker_id]||'worker')}</div>${['pending','accepted'].includes(r.status)?`<button class="btn alt" data-act="can" data-id="${r.id}">Cancel</button>`:''}${r.status==='accepted'?`<button class="btn" data-act="done" data-id="${r.id}">Mark job complete</button>`:''}</div>`).join('');
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,id=b.dataset.id;
+  const doit=(fn,after)=>guard(async()=>{await fn();toast('Done');after()});
+  if(a==='hire')openHire(id,b.dataset.n);
+  if(a==='pg'){F.off=Math.max(0,F.off+Number(b.dataset.o));guard(search);scrollTo(0,0)}
+  if(a==='acc')doit(()=>rpc('respond_hire_request',{p_id:Number(id),p_accept:true}),wReq);
+  if(a==='dec')doit(()=>rpc('respond_hire_request',{p_id:Number(id),p_accept:false}),wReq);
+  if(a==='can')doit(()=>rpc('cancel_hire_request',{p_id:Number(id)}),eReq);
+  if(a==='done')doit(()=>rpc('complete_hire_request',{p_id:Number(id)}),eReq);
+});
+</script></body></html>
