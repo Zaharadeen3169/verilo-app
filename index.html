@@ -25,6 +25,9 @@ button.alt{background:transparent;border:2px solid var(--teal);color:var(--tx)}b
 .row{display:flex;gap:12px;align-items:center}.av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:var(--teal);display:grid;place-items:center;font-weight:800;flex:none}
 .badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;display:inline-block}
 .b-v{background:#d9f7f1;color:#00695c}.b-r{background:#fdf0cf;color:#b7791f}.b-u{background:#e8edf2;color:#4a5d70}.b-x{background:#fbe0dc;color:#c0392b}
+.bub{padding:9px 12px;border-radius:14px;margin:6px 0;max-width:80%;white-space:pre-wrap;word-break:break-word}
+.bub.me{background:var(--teal);color:var(--navy);margin-left:auto}.bub.them{background:var(--bg);border:1px solid var(--ln)}
+#msgs{max-height:55vh;overflow:auto}.stars{color:#e9a400}.unread{border-left:4px solid var(--teal)}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;max-width:90%;z-index:9}
 #toast.show{opacity:1}#toast.bad{background:var(--bad)}
 #modal{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-end;justify-content:center;z-index:6}
@@ -61,7 +64,9 @@ const VL={unverified:'Unverified',under_review:'Under review',verified:'Verified
 const badge=s=>`<span class="badge ${VC[s]||'b-u'}">${esc(VL[s]||s)}</span>`;
 const opts=(a,sel,k,n)=>a.map(x=>`<option value="${esc(x[k])}"${String(x[k])===String(sel)?' selected':''}>${esc(x[n])}</option>`).join('');
 const ini=n=>String(n||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-let me,W,ST=[],CT=[],mode='login';
+const when=d=>d?new Date(d).toLocaleString('en-GB'):'';
+const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+let me,W,ST=[],CT=[],mode='login',cur='',chat=null,subbed=false;
 
 $('stt').innerHTML='<option value="">State</option>'+STN.map(s=>`<option>${esc(s)}</option>`).join('');
 $('role').onchange=()=>$('et').hidden=$('role').value!=='employer';
@@ -85,16 +90,21 @@ async function enter(u){
   const{data:p,error}=await sb.from('profiles').select('*').eq('id',u.id).single();if(error)throw error;
   if(p.role==='admin'){await sb.auth.signOut();throw new Error('Admins should use the admin website.')}
   if(p.status!=='active'){await sb.auth.signOut();throw new Error('This account is not active.')}
-  me=p;
+  me=p;me.email=u.email;
   const[s,c]=await Promise.all([sb.from('states').select('id,name').order('name'),sb.from('categories').select('id,slug,name').eq('active',true).order('name')]);
   ST=s.data||[];CT=c.data||[];
   $('auth').hidden=true;$('app').hidden=false;$('who').textContent=p.full_name;
   const T=TABS[p.role];$('tabs').innerHTML=T.map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('');go(T[0][0]);
+  if(!subbed){subbed=true;sb.channel('rt-'+me.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+me.id},x=>{toast(x.new.title+(x.new.body?': '+x.new.body:''));refreshBadge();if(cur==='nt')guard(notifs)})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},x=>addMsg(x.new)).subscribe()}
 }
-const TABS={worker:[['wp','My profile'],['wv','Verification'],['wr','Job requests']],employer:[['ef','Find workers'],['er','My requests']]};
-const R={wp:wProfile,wv:wVerify,wr:wReq,ef:eFind,er:eReq};
-function go(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('view').innerHTML='<p class="mut">Loading…</p>';guard(R[t])}
+const TABS={worker:[['wp','My profile'],['wv','Verification'],['wr','Job requests'],['ms','Messages'],['nt','Alerts'],['rv','My reviews'],['st','Settings']],employer:[['ef','Find workers'],['er','My requests'],['ms','Messages'],['nt','Alerts'],['st','Settings']]};
+const R={wp:wProfile,wv:wVerify,wr:wReq,ef:eFind,er:eReq,ms:msgs,nt:notifs,rv:wReviews,st:settings};
+function hl(t){cur=t;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+function go(t){hl(t);chat=null;$('view').innerHTML='<p class="mut">Loading…</p>';guard(R[t]);refreshBadge()}
 $('tabs').onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.t)};
+async function refreshBadge(){const{count}=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',me.id).is('read_at',null);const b=document.querySelector('#tabs [data-t=nt]');if(b)b.textContent='Alerts'+(count?` (${count})`:'')}
 async function loadW(){const{data,error}=await sb.from('worker_profiles').select('*').eq('user_id',me.id).maybeSingle();if(error)throw error;W=data}
 
 /* ---------- WORKER ---------- */
@@ -154,9 +164,15 @@ async function wVerify(){
   });
   if($('apgo'))$('apgo').onclick=()=>guard(async()=>{await rpc('file_appeal',{p_verification_id:last.id,p_message:$('apm').value.trim()});toast('Appeal sent');wVerify()});
 }
+const chatBtn=r=>`<button class="btn alt" data-act="chat" data-c="${r.conversation_id}" data-t="${esc(r.title)}" data-o="${esc(r.other_name)}">Message${r.unread>0?' ('+r.unread+' new)':''}</button>`;
 async function wReq(){
-  const{data,error}=await sb.from('hiring_requests').select('*').eq('worker_id',me.id).order('id',{ascending:false});if(error)throw error;
-  $('view').innerHTML=(data.length?'':'<div class="card">No job requests yet.</div>')+data.map(r=>`<div class="card"><b>${esc(r.title)}</b> <span class="badge b-u">${esc(r.status)}</span><p>${esc(r.description||'')}</p><div class="mut">${esc(r.location||'')} ${r.start_date?'· Start '+esc(r.start_date):''} ${r.pay_offer_ngn!=null?'· ₦'+Number(r.pay_offer_ngn).toLocaleString():''}</div>${r.status==='pending'?`<button class="btn" data-act="acc" data-id="${r.id}">Accept</button><button class="btn alt" data-act="dec" data-id="${r.id}">Decline</button>`:''}</div>`).join('');
+  const d=await rpc('my_requests');
+  $('view').innerHTML=(d.length?'':'<div class="card">No job requests yet.</div>')+d.map(r=>`<div class="card"><b>${esc(r.title)}</b> <span class="badge b-u">${esc(r.status)}</span><div class="mut">From ${esc(r.other_name)}</div><p>${esc(r.description||'')}</p><div class="mut">${esc(r.location||'')} ${r.start_date?'· Start '+esc(r.start_date):''} ${r.pay_offer_ngn!=null?'· ₦'+Number(r.pay_offer_ngn).toLocaleString():''}</div>${r.status==='pending'?`<button class="btn" data-act="acc" data-id="${r.id}">Accept</button><button class="btn alt" data-act="dec" data-id="${r.id}">Decline</button>`:''}${chatBtn(r)}</div>`).join('');
+}
+async function wReviews(){
+  const[a,b]=await Promise.all([sb.from('worker_rating_summary').select('*').eq('worker_id',me.id).maybeSingle(),sb.from('public_reviews').select('*').eq('worker_id',me.id).order('created_at',{ascending:false})]);
+  const s=a.data,l=b.data||[];
+  $('view').innerHTML=`<div class="card"><b>${s?`<span class="stars">★</span> ${esc(s.average_rating)} average from ${esc(s.review_count)} review${Number(s.review_count)===1?'':'s'}`:'No reviews yet'}</b><p class="mut">Employers can review you after a completed job.</p></div>`+l.map(r=>`<div class="card"><span class="stars">${stars(r.rating)}</span><p>${esc(r.comment||'')}</p><div class="mut">${esc(r.reviewer_first_name)} · ${esc(when(r.created_at))}</div></div>`).join('');
 }
 
 /* ---------- EMPLOYER ---------- */
@@ -174,35 +190,82 @@ function eFind(){
 }
 async function search(){
   const d=await rpc('search_workers',{p_state:F.state||null,p_category_slug:F.cat||null,p_availability:F.avail||null,p_verified_only:F.ver,p_query:F.q||null,p_limit:20,p_offset:F.off});
-  const tot=d.length?Number(d[0].total_count):0;
-  $('res').innerHTML=`<p class="mut">${tot} worker${tot===1?'':'s'} found</p>`+d.map(w=>`<div class="card"><div class="row"><div class="av">${esc(ini(w.full_name))}</div><div style="flex:1"><b>${esc(w.full_name)}</b><div class="mut">${esc(w.category||'')} · ${esc([w.city,w.lga,w.state].filter(Boolean).join(', '))}</div>${w.headline?`<div>${esc(w.headline)}</div>`:''}<div style="margin-top:4px">${badge(w.verification_status)} <span class="mut">${w.years_experience!=null?esc(w.years_experience)+' yrs · ':''}${w.availability==='available'?'Available':esc(w.availability)}</span></div></div></div><button class="btn" data-act="hire" data-id="${esc(w.user_id)}" data-n="${esc(w.full_name)}">Send hiring request</button></div>`).join('')+
+  const tot=d.length?Number(d[0].total_count):0;let rt={};
+  if(d.length){const{data}=await sb.from('worker_rating_summary').select('*').in('worker_id',d.map(w=>w.user_id));rt=Object.fromEntries((data||[]).map(x=>[x.worker_id,x]))}
+  $('res').innerHTML=`<p class="mut">${tot} worker${tot===1?'':'s'} found</p>`+d.map(w=>{const r=rt[w.user_id];return `<div class="card"><div class="row"><div class="av">${esc(ini(w.full_name))}</div><div style="flex:1"><b>${esc(w.full_name)}</b><div class="mut">${esc(w.category||'')} · ${esc([w.city,w.lga,w.state].filter(Boolean).join(', '))}</div>${w.headline?`<div>${esc(w.headline)}</div>`:''}<div style="margin-top:4px">${badge(w.verification_status)} <span class="mut">${r?'<span class="stars">★</span> '+esc(r.average_rating)+' ('+esc(r.review_count)+') · ':''}${w.years_experience!=null?esc(w.years_experience)+' yrs · ':''}${w.availability==='available'?'Available':esc(w.availability)}</span></div></div></div><button class="btn" data-act="hire" data-id="${esc(w.user_id)}" data-n="${esc(w.full_name)}">Send hiring request</button><button class="btn alt" data-act="rep" data-id="${esc(w.user_id)}" data-n="${esc(w.full_name)}">Report</button></div>`}).join('')+
   `<div>${F.off>0?'<button class="btn alt" data-act="pg" data-o="-20">← Previous</button>':''}${F.off+20<tot?'<button class="btn alt" data-act="pg" data-o="20">Next →</button>':''}</div>`;
 }
+function modal(html){const m=$('modal');m.hidden=false;m.innerHTML='<div>'+html+'<button class="btn alt" id="mclose">Cancel</button></div>';$('mclose').onclick=()=>{m.hidden=true}}
 function openHire(id,name){
-  const m=$('modal');m.hidden=false;
-  m.innerHTML=`<div><b>Hiring request for ${esc(name)}</b><label>Job title</label><input id="ht" maxlength="100" placeholder="e.g. Weekly house cleaning"><label>Details</label><textarea id="hd" rows="3" maxlength="1000"></textarea><label>Start date</label><input id="hs" type="date"><label>Location</label><input id="hl" maxlength="150" placeholder="Area, city, state"><label>Pay offer (₦)</label><input id="hp" type="number" min="0"><p class="mut">Keep all communication and payment on Verilo. Never share OTP codes or pay deposits to someone you have not met.</p><button class="btn" id="hsend">Send request</button><button class="btn alt" id="hcancel">Cancel</button></div>`;
-  $('hcancel').onclick=()=>{m.hidden=true};
+  modal(`<b>Hiring request for ${esc(name)}</b><label>Job title</label><input id="ht" maxlength="100" placeholder="e.g. Weekly house cleaning"><label>Details</label><textarea id="hd" rows="3" maxlength="1000"></textarea><label>Start date</label><input id="hs" type="date"><label>Location</label><input id="hl" maxlength="150" placeholder="Area, city, state"><label>Pay offer (₦)</label><input id="hp" type="number" min="0"><p class="mut">Keep all communication and payment on Verilo. Never share OTP codes or pay deposits to someone you have not met.</p><button class="btn" id="hsend">Send request</button>`);
   $('hsend').onclick=()=>guard(async()=>{
     if($('ht').value.trim().length<3)throw new Error('Enter a job title.');
     await rpc('send_hire_request',{p_worker:id,p_title:$('ht').value.trim(),p_description:$('hd').value.trim()||null,p_start:$('hs').value||null,p_location:$('hl').value.trim()||null,p_pay:num($('hp').value)});
-    m.hidden=true;toast('Request sent');
+    $('modal').hidden=true;toast('Request sent');
   });
 }
+function openReport(id,name){
+  modal(`<b>Report ${esc(name)}</b><label>Reason</label><select id="rr"><option value="fake_profile">Fake profile</option><option value="fraud">Fraud or scam</option><option value="harassment">Harassment</option><option value="unsafe_behaviour">Unsafe behaviour</option><option value="fake_review">Fake review</option><option value="other">Other</option></select><label>Details (optional)</label><textarea id="rd" rows="3" maxlength="1000"></textarea><button class="btn red" id="rsend">Send report</button>`);
+  $('rsend').onclick=()=>guard(async()=>{await rpc('file_report',{p_target:id,p_reason:$('rr').value,p_details:$('rd').value.trim()||null});$('modal').hidden=true;toast('Report sent to Verilo admins')});
+}
+function openReview(id){
+  modal(`<b>Review this worker</b><label>Rating</label><select id="rt"><option value="5">5 – Excellent</option><option value="4">4 – Good</option><option value="3">3 – Okay</option><option value="2">2 – Poor</option><option value="1">1 – Very poor</option></select><label>Comment (optional)</label><textarea id="rc" rows="3" maxlength="600"></textarea><p class="mut">Reviews are tied to a completed job and can be checked by admins.</p><button class="btn" id="rsub">Submit review</button>`);
+  $('rsub').onclick=()=>guard(async()=>{await rpc('submit_review',{p_request:id,p_rating:Number($('rt').value),p_comment:$('rc').value.trim()||null});$('modal').hidden=true;toast('Review submitted');eReq()});
+}
 async function eReq(){
-  const{data,error}=await sb.from('hiring_requests').select('*').eq('employer_id',me.id).order('id',{ascending:false});if(error)throw error;
-  const ids=[...new Set(data.map(r=>r.worker_id))];let nm={};
-  if(ids.length){const{data:w}=await sb.from('public_workers').select('user_id,full_name').in('user_id',ids);nm=Object.fromEntries((w||[]).map(x=>[x.user_id,x.full_name]))}
-  $('view').innerHTML=(data.length?'':'<div class="card">You have not sent any requests yet.</div>')+data.map(r=>`<div class="card"><b>${esc(r.title)}</b> <span class="badge b-u">${esc(r.status)}</span><div class="mut">To ${esc(nm[r.worker_id]||'worker')}</div>${['pending','accepted'].includes(r.status)?`<button class="btn alt" data-act="can" data-id="${r.id}">Cancel</button>`:''}${r.status==='accepted'?`<button class="btn" data-act="done" data-id="${r.id}">Mark job complete</button>`:''}</div>`).join('');
+  const d=await rpc('my_requests');
+  $('view').innerHTML=(d.length?'':'<div class="card">You have not sent any requests yet.</div>')+d.map(r=>`<div class="card"><b>${esc(r.title)}</b> <span class="badge b-u">${esc(r.status)}</span><div class="mut">To ${esc(r.other_name)}</div>${['pending','accepted'].includes(r.status)?`<button class="btn alt" data-act="can" data-id="${r.id}">Cancel</button>`:''}${r.status==='accepted'?`<button class="btn" data-act="done" data-id="${r.id}">Mark job complete</button>`:''}${r.status==='completed'&&!r.reviewed?`<button class="btn" data-act="rev" data-id="${r.id}">Leave a review</button>`:''}${chatBtn(r)}</div>`).join('');
+}
+
+/* ---------- MESSAGES ---------- */
+async function msgs(){
+  const d=await rpc('my_requests');
+  $('view').innerHTML=(d.length?'':'<div class="card">No conversations yet. They start when a hiring request is sent.</div>')+d.map(r=>`<div class="card" data-act="chat" data-c="${r.conversation_id}" data-t="${esc(r.title)}" data-o="${esc(r.other_name)}"><div class="row"><div class="av">${esc(ini(r.other_name))}</div><div style="flex:1"><b>${esc(r.other_name)}</b>${r.unread>0?` <span class="badge b-v">${r.unread} new</span>`:''}<div class="mut">${esc(r.title)} · ${esc(r.status)}</div></div></div></div>`).join('');
+}
+async function openChat(cid,title,other){
+  hl('ms');chat={cid,seen:new Set()};
+  const{data,error}=await sb.from('messages').select('*').eq('conversation_id',cid).order('id');if(error)throw error;
+  $('view').innerHTML=`<button class="btn alt" data-act="back">← Back</button><div class="card"><b>${esc(other)}</b><div class="mut">${esc(title)}</div></div><div id="msgs" class="card"></div><div class="row"><input id="mi" placeholder="Type a message" maxlength="2000" style="margin:0"><button class="btn" id="msend" style="margin:0">Send</button></div><p class="mut">Keep chat and payment on Verilo. Never share OTP codes or bank PINs.</p>`;
+  (data||[]).forEach(addMsg);
+  $('msend').onclick=sendMsg;$('mi').onkeydown=e=>{if(e.key==='Enter')sendMsg()};
+  rpc('mark_messages_read',{p_conversation:cid}).catch(()=>{});
+}
+function addMsg(m){
+  const el=$('msgs');if(!el||!chat||m.conversation_id!==chat.cid||chat.seen.has(m.id))return;
+  chat.seen.add(m.id);const d=document.createElement('div');d.className='bub '+(m.sender_id===me.id?'me':'them');d.textContent=m.body;el.appendChild(d);el.scrollTop=el.scrollHeight;
+  if(m.sender_id!==me.id)rpc('mark_messages_read',{p_conversation:m.conversation_id}).catch(()=>{});
+}
+async function sendMsg(){
+  const i=$('mi'),t=i.value.trim();if(!t||!chat)return;i.value='';
+  try{const id=await rpc('send_message',{p_conversation:chat.cid,p_body:t});addMsg({id,sender_id:me.id,body:t,conversation_id:chat.cid})}catch(e){i.value=t;toast(e.message||String(e),true)}
+}
+
+/* ---------- ALERTS & SETTINGS ---------- */
+async function notifs(){
+  const{data,error}=await sb.from('notifications').select('*').eq('user_id',me.id).order('id',{ascending:false}).limit(50);if(error)throw error;
+  const un=data.filter(n=>!n.read_at).length;
+  $('view').innerHTML=(un?'<button class="btn alt" data-act="readall">Mark all as read</button>':'')+(data.length?'':'<div class="card">No alerts yet.</div>')+data.map(n=>`<div class="card${n.read_at?'':' unread'}"><b>${esc(n.title)}</b><div>${esc(n.body||'')}</div><div class="mut">${esc(when(n.created_at))}</div></div>`).join('');
+}
+async function settings(){
+  $('view').innerHTML=`<div class="card"><b>${esc(me.full_name)}</b><div class="mut">${esc(me.email||'')} · ${esc(me.role)}</div></div>
+  <div class="card"><b>Delete my account</b><p class="mut">This sends a deletion request to Verilo. Your account is closed and our team will remove your personal data and any documents you uploaded.</p><button class="btn red" data-act="del">Request account deletion</button></div>
+  <div class="card"><b>Need help?</b><p class="mut">Verification means documents were checked. It does not guarantee a person’s behaviour or safety. Use Report on a profile to flag anything suspicious.</p></div>`;
 }
 
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,id=b.dataset.id;
   const doit=(fn,after)=>guard(async()=>{await fn();toast('Done');after()});
   if(a==='hire')openHire(id,b.dataset.n);
+  if(a==='rep')openReport(id,b.dataset.n);
+  if(a==='rev')openReview(Number(id));
+  if(a==='chat')guard(()=>openChat(Number(b.dataset.c),b.dataset.t,b.dataset.o));
+  if(a==='back')go('ms');
   if(a==='pg'){F.off=Math.max(0,F.off+Number(b.dataset.o));guard(search);scrollTo(0,0)}
   if(a==='acc')doit(()=>rpc('respond_hire_request',{p_id:Number(id),p_accept:true}),wReq);
   if(a==='dec')doit(()=>rpc('respond_hire_request',{p_id:Number(id),p_accept:false}),wReq);
   if(a==='can')doit(()=>rpc('cancel_hire_request',{p_id:Number(id)}),eReq);
   if(a==='done')doit(()=>rpc('complete_hire_request',{p_id:Number(id)}),eReq);
+  if(a==='readall')guard(async()=>{const{error}=await sb.from('notifications').update({read_at:new Date().toISOString()}).eq('user_id',me.id).is('read_at',null);if(error)throw error;notifs();refreshBadge()});
+  if(a==='del'&&confirm('Request deletion of your account? You will be logged out.'))guard(async()=>{await rpc('request_account_deletion');toast('Deletion request sent');await sb.auth.signOut();setTimeout(()=>location.reload(),1200)});
 });
 </script></body></html>
