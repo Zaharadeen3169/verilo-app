@@ -33,6 +33,7 @@ button.alt{background:transparent;border:2px solid var(--teal);color:var(--tx)}b
 #toast.show{opacity:1}#toast.bad{background:var(--bad)}
 #modal{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-end;justify-content:center;z-index:6}
 #modal>div{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+button.sm{padding:6px 11px;font-size:13px;margin:4px 5px 0 0}.card img,.card video{max-height:70vh;object-fit:contain;background:#0002}
 </style></head><body>
 <section class="login" id="auth">
 <h1 style="margin-bottom:0">Verilo</h1><p class="mut" style="margin-top:2px">Verify People. Build Trust.</p>
@@ -361,5 +362,167 @@ document.addEventListener('click',e=>{
   if(a==='evid')guard(async()=>{const{data,error}=await sb.storage.from('payment-evidence').createSignedUrl(x.dataset.p,60);if(error)throw error;window.open(data.signedUrl,'_blank')});
   if(a==='readall')guard(async()=>{const{error}=await sb.from('notifications').update({read_at:new Date().toISOString()}).eq('user_id',me.id).is('read_at',null);if(error)throw error;notifs();refreshBadge()});
   if(a==='del'&&confirm('Request deletion of your account? You will be logged out.'))guard(async()=>{await rpc('request_account_deletion');toast('Deletion request sent');await sb.auth.signOut();setTimeout(()=>location.reload(),1200)});
+});
+/* ================= STAGE 10: NETWORK & JOBS ================= */
+const KIND={update:'Update',work:'Completed work',achievement:'Achievement',availability:'Available for work',certificate:'Certificate or training',knowledge:'Tip or knowledge',opportunity:'Opportunity',business:'Business update'};
+const KINDS={worker:['update','work','achievement','availability','certificate','knowledge'],employer:['update','opportunity','business']};
+const CR=[['spam','Spam'],['fake_account','Fake account'],['harassment','Harassment or abuse'],['private_information','Private information'],['child_privacy','Private information about a child'],['copyright','Copyright (my work was copied)'],['inappropriate','Inappropriate content'],['other','Something else']];
+const JS_={applied:'Applied',viewed:'Viewed',shortlisted:'Shortlisted',rejected:'Not selected',hired:'Hired',withdrawn:'Withdrawn'};
+TABS.worker=[['hm','Home'],['nw','Network'],['np','+ Post'],['jb','Jobs'],['bk','Bookings'],['ms','Messages'],['nt','Alerts'],['pf','Profile'],['wp','Edit profile'],['wv','Verification'],['rv','My reviews'],['st','Settings']];
+TABS.employer=[['hm','Home'],['nw','Network'],['np','+ Post'],['jb','Jobs'],['ef','Find workers'],['bk','Bookings'],['ms','Messages'],['nt','Alerts'],['pf','Profile'],['st','Settings']];
+Object.assign(R,{hm:home,nw:network,np:newPost,jb:jobs,pf:()=>showProfile(me.id)});
+let FD={mode:'latest',off:0,user:null},JT='browse',JF={state:'',cat:'',q:''};
+
+/* ----- feed ----- */
+function home(){
+  FD={mode:FD.mode==='user'?'latest':FD.mode,off:0,user:null};
+  const B=(m,l)=>`<button data-n="mode" data-m="${m}" class="${FD.mode===m?'on':''}">${l}</button>`;
+  $('view').innerHTML=`<div class="seg">${B('latest','Latest')}${B('following','Following')}${B('trending','Trending')}</div><div id="feed"></div><div id="more"></div>`;
+  guard(()=>loadFeed(false));
+}
+async function loadFeed(append){
+  const mode=FD.mode==='latest'?'home':FD.mode;
+  const d=await rpc('get_feed',{p_mode:mode,p_user:FD.user,p_limit:10,p_offset:FD.off});
+  const el=$('feed');if(!append)el.innerHTML='';
+  if(!d.length&&!append)el.innerHTML='<div class="card">Nothing here yet. Follow people in Network, or write the first post.</div>';
+  const w=document.createElement('div');w.innerHTML=d.map(postCard).join('');while(w.firstChild)el.appendChild(w.firstChild);
+  FD.off+=d.length;$('more').innerHTML=d.length===10?'<button class="btn alt" data-n="more">Load more</button>':'';
+  signMedia(el);
+}
+async function signMedia(root){
+  const els=[...root.querySelectorAll('[data-mp]:not([src])')];if(!els.length)return;
+  const{data}=await sb.storage.from('post-media').createSignedUrls([...new Set(els.map(e=>e.dataset.mp))],3600);
+  const m=Object.fromEntries((data||[]).filter(x=>x.signedUrl).map(x=>[x.path,x.signedUrl]));
+  els.forEach(e=>{if(m[e.dataset.mp])e.src=m[e.dataset.mp]});
+}
+function postCard(p){
+  const media=(p.media||[]).map(m=>m.kind==='video'?`<video controls playsinline preload="metadata" data-mp="${esc(m.path)}" style="width:100%;border-radius:10px;margin-top:6px"></video>`:`<img data-mp="${esc(m.path)}" alt="Post photo" style="width:100%;border-radius:10px;margin-top:6px">`).join('');
+  const sh=p.shared_post_id?`<div class="card" style="margin:8px 0 0">${p.shared_author?`<b>${esc(p.shared_author)}</b><p>${esc(p.shared_body||'')}</p>`:'<span class="mut">The original post is not available.</span>'}</div>`:'';
+  return `<div class="card"><div class="row"><div class="av" data-n="prof" data-u="${esc(p.author_id)}" style="cursor:pointer">${esc(ini(p.author_name))}</div><div style="flex:1"><b data-n="prof" data-u="${esc(p.author_id)}" style="cursor:pointer">${esc(p.author_name)}</b> ${p.verification?badge(p.verification):''}<div class="mut">${esc(p.author_detail||p.author_role)} · ${esc(when(p.created_at))}</div></div></div>
+  <div class="mut" style="margin-top:6px">${esc(KIND[p.kind]||p.kind)}${p.is_promoted?' · <b>Promoted</b>':''}</div><p style="white-space:pre-wrap;margin:6px 0">${esc(p.body||'')}</p>${sh}${media}
+  <div style="margin-top:8px"><button class="btn alt sm" data-n="like" data-id="${p.id}">${p.liked?'♥':'♡'} ${p.like_count}</button><button class="btn alt sm" data-n="cmt" data-id="${p.id}">💬 ${p.comment_count}</button><button class="btn alt sm" data-n="share" data-id="${p.id}">↪ Share</button><button class="btn alt sm" data-n="menu" data-id="${p.id}" data-u="${esc(p.author_id)}" data-name="${esc(p.author_name)}">⋯</button></div></div>`;
+}
+async function openComments(pid){
+  const d=await rpc('get_comments',{p_post:pid,p_limit:50,p_offset:0});
+  modal(`<b>Comments</b>${d.length?d.map(c=>`<div class="bub them"><b>${esc(c.author_name)}</b><br>${esc(c.body)}<div class="mut">${esc(when(c.created_at))}</div>${c.author_id!==me.id?`<button class="btn alt sm" data-n="rc" data-id="${c.id}">Report</button>`:''}</div>`).join(''):'<p class="mut">No comments yet.</p>'}<textarea id="cm" rows="2" maxlength="1000" placeholder="Write a comment"></textarea><button class="btn" id="csend">Comment</button>`);
+  $('csend').onclick=()=>guard(async()=>{const t=$('cm').value.trim();if(!t)throw new Error('Write a comment first.');await rpc('add_comment',{p_post:pid,p_body:t});openComments(pid)});
+}
+function openShare(id){
+  modal(`<b>Share this post</b><p class="mut">It will appear on your profile and in your followers’ feeds.</p><textarea id="sc" rows="2" maxlength="1000" placeholder="Add a comment (optional)"></textarea><button class="btn" id="ssend">Share</button>`);
+  $('ssend').onclick=()=>guard(async()=>{await rpc('create_post',{p_kind:'update',p_body:$('sc').value.trim(),p_visibility:'public',p_media:[],p_shared:id});shut();toast('Shared');home()});
+}
+function openMenu(id,uid,name){
+  modal(uid===me.id?`<button class="btn red" data-n="del" data-id="${id}">Delete my post</button>`:`<button class="btn alt" data-n="rp" data-id="${id}">Report this post</button><button class="btn red" data-n="block" data-u="${esc(uid)}">Block ${esc(name)}</button>`);
+}
+function openContentReport(pid,cid){
+  modal(`<b>Report ${pid?'this post':'this comment'}</b><label>Reason</label><select id="cr">${CR.map(r=>`<option value="${r[0]}">${esc(r[1])}</option>`).join('')}</select><label>Details (for copyright, name your original work and where it was published)</label><textarea id="cd" rows="3" maxlength="1000"></textarea><button class="btn red" id="crs">Send report</button>`);
+  $('crs').onclick=()=>guard(async()=>{await rpc('report_content',{p_post:pid,p_comment:cid,p_reason:$('cr').value,p_details:$('cd').value.trim()||null});shut();toast('Report sent to Verilo admins')});
+}
+
+/* ----- create post ----- */
+function newPost(){
+  $('view').innerHTML=`<div class="card"><b>Create a post</b><label>Type</label><select id="nk">${KINDS[me.role].map(k=>`<option value="${k}">${esc(KIND[k])}</option>`).join('')}</select>
+  <label>What would you like to share?</label><textarea id="nb" rows="5" maxlength="2000"></textarea>
+  <label>Photos or videos (up to 6; photos 5 MB, videos 25 MB)</label><input id="nf" type="file" accept="image/*,video/*" multiple>
+  <label>Who can see this?</label><select id="nv"><option value="public">Everyone on Verilo</option><option value="followers">Only my followers</option></select>
+  <label class="chk"><input type="checkbox" id="nc"> I confirm this post does not show ID documents, phone or bank numbers, or private information about children.</label>
+  <button class="btn" id="npost">Publish</button></div>`;
+  $('npost').onclick=()=>guard(async()=>{
+    if(!$('nc').checked)throw new Error('Please tick the confirmation first.');
+    const fs=[...$('nf').files];if(fs.length>6)throw new Error('You can add up to 6 files.');
+    for(const f of fs){const v=f.type.startsWith('video/'),i=f.type.startsWith('image/');if(!v&&!i)throw new Error('Only photos and videos are allowed.');if(f.size>(v?26214400:5242880))throw new Error((v?'Videos must be under 25 MB.':'Photos must be under 5 MB.'))}
+    $('npost').disabled=true;toast('Publishing…');
+    const media=[];
+    for(let k=0;k<fs.length;k++){const f=fs[k],ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,''),path=`${me.id}/post-${Date.now()}-${k}.${ext}`;
+      const{error}=await sb.storage.from('post-media').upload(path,f,{contentType:f.type});if(error)throw error;media.push({kind:f.type.startsWith('video/')?'video':'image',path})}
+    try{await rpc('create_post',{p_kind:$('nk').value,p_body:$('nb').value.trim(),p_visibility:$('nv').value,p_media:media,p_shared:null})}
+    catch(e){$('npost').disabled=false;if(media.length)sb.storage.from('post-media').remove(media.map(m=>m.path));throw e}
+    toast('Posted');FD.mode='latest';go('hm');
+  });
+}
+
+/* ----- network & profiles ----- */
+async function network(){
+  const d=await rpc('suggest_people',{p_limit:30});
+  $('view').innerHTML='<p class="mut">People and businesses you may want to follow.</p>'+(d.length?'':'<div class="card">No suggestions right now.</div>')+d.map(u=>`<div class="card"><div class="row"><div class="av" data-n="prof" data-u="${esc(u.id)}" style="cursor:pointer">${esc(ini(u.full_name))}</div><div style="flex:1"><b data-n="prof" data-u="${esc(u.id)}" style="cursor:pointer">${esc(u.full_name)}</b> ${u.verification?badge(u.verification):''}<div class="mut">${esc(u.detail||u.role)}${u.state?' · '+esc(u.state):''} · ${esc(u.followers)} follower${Number(u.followers)===1?'':'s'}</div></div></div><button class="btn sm" data-n="follow" data-u="${esc(u.id)}">Follow</button><button class="btn alt sm" data-n="prof" data-u="${esc(u.id)}">View profile</button></div>`).join('');
+}
+async function showProfile(uid){
+  hl('pf');const d=await rpc('social_profile',{p_user:uid}),p=d[0];if(!p)throw new Error('This profile is not available.');
+  const own=uid===me.id;let rt='';
+  if(p.role==='worker'){const{data}=await sb.from('worker_rating_summary').select('*').eq('worker_id',uid).maybeSingle();if(data)rt=`<div><span class="stars">★</span> ${esc(data.average_rating)} (${esc(data.review_count)} reviews)</div>`}
+  FD={mode:'user',off:0,user:uid};
+  $('view').innerHTML=`<div class="card"><div class="row"><div class="av">${esc(ini(p.full_name))}</div><div style="flex:1"><b>${esc(p.full_name)}</b> ${p.verification?badge(p.verification):''}<div class="mut">${esc(p.detail||p.role)}${p.state?' · '+esc(p.state):''}${p.city?', '+esc(p.city):''}</div></div></div>
+  ${p.headline?`<p><b>${esc(p.headline)}</b></p>`:''}${p.bio?`<p>${esc(p.bio)}</p>`:''}${rt}<div class="mut">${esc(p.posts)} posts · ${esc(p.followers)} followers · ${esc(p.following)} following</div>
+  ${own?(me.role==='worker'?'<button class="btn" data-n="editp">Edit profile</button>':'')+'<button class="btn alt" data-n="newp">New post</button>':`<button class="btn" data-n="fprof" data-u="${esc(uid)}">${p.i_follow?'Following ✓':'Follow'}</button>${p.role==='worker'&&me.role==='employer'?`<button class="btn alt" data-n="hirew" data-u="${esc(uid)}" data-name="${esc(p.full_name)}">Send hiring request</button>`:''}<button class="btn alt" data-n="repu" data-u="${esc(uid)}" data-name="${esc(p.full_name)}">Report</button><button class="btn red" data-n="block" data-u="${esc(uid)}">Block</button>`}</div><h3>Posts</h3><div id="feed"></div><div id="more"></div>`;
+  loadFeed(false).catch(e=>toast(e.message,true));
+}
+
+/* ----- jobs ----- */
+function jobs(){me.role==='worker'?workerJobs():employerJobs()}
+const money=(a,b)=>a==null&&b==null?'Pay not stated':a!=null&&b!=null?`${ngn(a)} – ${ngn(b)}`:a!=null?`From ${ngn(a)}`:`Up to ${ngn(b)}`;
+async function workerJobs(){
+  $('view').innerHTML=`<div class="seg"><button data-n="jt" data-t="browse" class="${JT==='browse'?'on':''}">Browse jobs</button><button data-n="jt" data-t="apps" class="${JT==='apps'?'on':''}">My applications</button></div><div id="jb"></div>`;
+  if(JT==='apps'){
+    const d=await rpc('my_applications');
+    $('jb').innerHTML=(d.length?'':'<div class="card">You have not applied for any jobs yet.</div>')+d.map(a=>`<div class="card"><b>${esc(a.title)}</b><div class="mut">${esc(a.employer_name)} · applied ${esc(when(a.created_at))}</div><p><span class="badge b-u">${esc(JS_[a.status]||a.status)}</span>${a.job_status!=='open'?' <span class="mut">(job '+esc(a.job_status)+')</span>':''}</p>${['applied','viewed','shortlisted'].includes(a.status)?`<button class="btn alt sm" data-n="wd" data-id="${a.id}">Withdraw</button>`:''}</div>`).join('');return}
+  $('jb').innerHTML=`<div class="card"><input id="jq" placeholder="Search jobs" value="${esc(JF.q)}"><select id="jst"><option value="">All of Nigeria</option>${STN.map(s=>`<option${JF.state===s?' selected':''}>${esc(s)}</option>`).join('')}</select><select id="jca"><option value="">All occupations</option>${opts(CT,JF.cat,'slug','name')}</select><button class="btn" id="jgo">Search</button></div><div id="jres"></div>`;
+  $('jgo').onclick=()=>{JF={q:$('jq').value.trim(),state:$('jst').value,cat:$('jca').value};guard(runJobs)};
+  await runJobs();
+}
+async function runJobs(){
+  const d=await rpc('get_jobs',{p_state:JF.state||null,p_category_slug:JF.cat||null,p_query:JF.q||null,p_limit:20,p_offset:0});
+  $('jres').innerHTML=`<p class="mut">${d.length?(d[0].total_count>d.length?`Showing ${d.length} of ${d[0].total_count} jobs`:`${d.length} job${d.length===1?'':'s'}`):''}</p>`+(d.length?'':'<div class="card">No open jobs match your search.</div>')+d.map(j=>`<div class="card"><b>${esc(j.title)}</b><div class="mut"><span data-n="prof" data-u="${esc(j.employer_id)}" style="cursor:pointer;text-decoration:underline">${esc(j.employer_name)}</span> · ${esc(j.category||'Any occupation')} · ${esc([j.city,j.lga,j.state].filter(Boolean).join(', ')||'Nigeria')}</div><div>${money(j.pay_min_ngn,j.pay_max_ngn)}</div><p>${esc(j.description.length>300?j.description.slice(0,300)+'…':j.description)}</p>${j.requirements?`<p class="mut">Requirements: ${esc(j.requirements)}</p>`:''}<div class="mut">Closes ${esc(when(j.expires_at))}</div>${j.applied?'<span class="badge b-v">Applied ✓</span>':`<button class="btn sm" data-n="apply" data-id="${j.id}" data-title="${esc(j.title)}">Apply</button>`}</div>`).join('')+'<p class="mut">Never pay money to apply for a job. Report any job that asks for a fee.</p>';
+}
+function openApply(id,title){
+  modal(`<b>Apply: ${esc(title)}</b><p class="mut">The employer sees your name, occupation, location, verification status and ratings.</p><textarea id="am" rows="4" maxlength="1000" placeholder="Short message to the employer (optional)"></textarea><button class="btn" id="asend">Send application</button>`);
+  $('asend').onclick=()=>guard(async()=>{await rpc('apply_to_job',{p_job:id,p_message:$('am').value.trim()||null});shut();toast('Application sent');runJobs()});
+}
+async function employerJobs(){
+  const d=await rpc('my_jobs');
+  $('view').innerHTML=`<button class="btn" data-n="pjob">+ Post a job</button>`+(d.length?'':'<div class="card">You have not posted any jobs yet.</div>')+d.map(j=>`<div class="card"><b>${esc(j.title)}</b> <span class="badge b-u">${esc(j.status)}</span><div class="mut">${esc(j.applicants)} applicant${Number(j.applicants)===1?'':'s'}${j.new_applicants>0?` (${esc(j.new_applicants)} new)`:''} · closes ${esc(when(j.expires_at))}</div><button class="btn sm" data-n="appl" data-id="${j.id}" data-title="${esc(j.title)}">Applicants</button>${j.status==='open'?`<button class="btn alt sm" data-n="cjob" data-id="${j.id}">Close job</button>`:''}</div>`).join('');
+}
+function postJobModal(){
+  modal(`<b>Post a job</b><label>Job title</label><input id="jn1" maxlength="100"><label>Description</label><textarea id="jn2" rows="4" maxlength="2000"></textarea><label>Requirements (optional)</label><textarea id="jn3" rows="2" maxlength="1000"></textarea>
+  <label>Occupation</label><select id="jn4"><option value="">Choose…</option>${opts(CT,'','id','name')}</select><label>State</label><select id="jn5"><option value="">Choose…</option>${opts(ST,'','id','name')}</select><label>LGA</label><select id="jn6"><option value="">Choose state first</option></select><label>City or town</label><input id="jn7" maxlength="80">
+  <label>Pay from (₦, optional)</label><input id="jn8" type="number" min="0"><label>Pay up to (₦, optional)</label><input id="jn9" type="number" min="0"><label>Keep open for</label><select id="jn10"><option value="14">14 days</option><option value="30" selected>30 days</option><option value="60">60 days</option></select>
+  <p class="mut">Never ask workers for money, ID numbers or bank details in a job post. Fees for applying are not allowed.</p><button class="btn" id="jpost">Publish job</button>`);
+  $('jn5').onchange=async()=>{const s=$('jn5').value;if(!s){$('jn6').innerHTML='<option value="">Choose state first</option>';return}const{data}=await sb.from('lgas').select('id,name').eq('state_id',s).order('name');$('jn6').innerHTML='<option value="">Any LGA</option>'+opts(data||[],'','id','name')};
+  $('jpost').onclick=()=>guard(async()=>{
+    await rpc('create_job',{p_title:$('jn1').value.trim(),p_description:$('jn2').value.trim(),p_category_id:num($('jn4').value),p_state_id:num($('jn5').value),p_lga_id:num($('jn6').value),p_city:$('jn7').value.trim()||null,p_pay_min:num($('jn8').value),p_pay_max:num($('jn9').value),p_requirements:$('jn3').value.trim()||null,p_days:Number($('jn10').value)});
+    shut();toast('Job published');employerJobs();
+  });
+}
+async function openApplicants(jid,title){
+  const d=await rpc('job_applicants',{p_job:jid});
+  modal(`<b>Applicants: ${esc(title)}</b>`+(d.length?'':'<p class="mut">No applicants yet.</p>')+d.map(a=>`<div class="card" style="margin-top:8px"><b data-n="prof" data-u="${esc(a.worker_id)}" style="cursor:pointer">${esc(a.full_name)}</b> ${a.verification?badge(a.verification):''}<div class="mut">${esc(a.category||'')} · ${esc(a.state||'')}${a.avg_rating?` · ★ ${esc(a.avg_rating)} (${esc(a.review_count)})`:''}</div>${a.message?`<p>${esc(a.message)}</p>`:''}<p><span class="badge b-u">${esc(JS_[a.status]||a.status)}</span></p>
+  <button class="btn alt sm" data-n="ast" data-id="${a.application_id}" data-s="shortlisted" data-j="${jid}" data-title="${esc(title)}">Shortlist</button><button class="btn alt sm" data-n="ast" data-id="${a.application_id}" data-s="rejected" data-j="${jid}" data-title="${esc(title)}">Not selected</button><button class="btn sm" data-n="ast" data-id="${a.application_id}" data-s="hired" data-j="${jid}" data-title="${esc(title)}">Hired</button><button class="btn alt sm" data-n="hirew" data-u="${esc(a.worker_id)}" data-name="${esc(a.full_name)}">Send hiring request</button></div>`).join(''));
+}
+
+/* ----- clicks ----- */
+document.addEventListener('click',e=>{
+  const x=e.target.closest('[data-n]');if(!x)return;const a=x.dataset.n,id=Number(x.dataset.id),u=x.dataset.u,g=guard;
+  if(a==='mode'){FD.mode=x.dataset.m;home()}
+  if(a==='more')g(()=>loadFeed(true));
+  if(a==='prof'){shut();g(()=>showProfile(u))}
+  if(a==='like')g(async()=>{const cur0=Number(x.textContent.replace(/\D/g,''))||0,l=await rpc('toggle_like',{p_post:id});x.textContent=(l?'♥ ':'♡ ')+(cur0+(l?1:-1))});
+  if(a==='cmt')g(()=>openComments(id));
+  if(a==='share')openShare(id);
+  if(a==='menu')openMenu(id,u,x.dataset.name);
+  if(a==='rp')openContentReport(id,null);
+  if(a==='rc')openContentReport(null,id);
+  if(a==='repu')openReport(u,x.dataset.name);
+  if(a==='del'&&confirm('Delete this post?'))g(async()=>{await rpc('delete_post',{p_post:id});shut();toast('Deleted');cur==='pf'?showProfile(me.id):home()});
+  if(a==='block'&&confirm('Block this person? You will no longer see each other’s posts, profiles or jobs.'))g(async()=>{await rpc('toggle_block',{p_user:u});shut();toast('Blocked');go('hm')});
+  if(a==='follow')g(async()=>{const f=await rpc('toggle_follow',{p_user:u});x.textContent=f?'Following ✓':'Follow'});
+  if(a==='fprof')g(async()=>{const f=await rpc('toggle_follow',{p_user:u});toast(f?'Following':'Unfollowed');showProfile(u)});
+  if(a==='editp')go('wp');if(a==='newp')go('np');
+  if(a==='hirew')openHire(u,x.dataset.name);
+  if(a==='jt'){JT=x.dataset.t;jobs()}
+  if(a==='apply')openApply(id,x.dataset.title);
+  if(a==='wd')g(async()=>{await rpc('withdraw_application',{p_app:id});toast('Withdrawn');jobs()});
+  if(a==='pjob')postJobModal();
+  if(a==='appl')g(()=>openApplicants(id,x.dataset.title));
+  if(a==='cjob'&&confirm('Close this job? Applicants will no longer see it.'))g(async()=>{await rpc('close_job',{p_job:id,p_filled:false});toast('Job closed');employerJobs()});
+  if(a==='ast')g(async()=>{await rpc('set_application_status',{p_app:id,p_status:x.dataset.s});toast('Updated');openApplicants(Number(x.dataset.j),x.dataset.title)});
 });
 </script></body></html>
