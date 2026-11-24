@@ -2,527 +2,114 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Verilo — Verify People. Build Trust.</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <style>
-:root{--navy:#102A43;--teal:#00C2A8;--bg:#F3F6F9;--card:#fff;--tx:#102A43;--mut:#5b6f82;--ln:#dfe6ed;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1c2c;--card:#142f47;--tx:#f3f6f9;--mut:#9fb3c6;--ln:#24435f}}
-*{box-sizing:border-box}[hidden]{display:none!important}html{height:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;line-height:1.45}
-header{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
-header b{flex:1;font-size:18px}header small{opacity:.8}
-header button{background:none;border:1px solid #ffffff55;color:#fff;border-radius:8px;padding:6px 10px}
-nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--ln)}
-nav button,.seg button{white-space:nowrap;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:99px;padding:8px 14px;font-size:14px}
-nav button.on,.seg button.on{background:var(--navy);color:#fff}.seg{display:flex;gap:6px;margin:10px 0}.seg button{flex:1}
-main{max-width:640px;margin:0 auto;padding:14px}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
-.mut{color:var(--mut);font-size:13px}label{font-size:13px;color:var(--mut);font-weight:600;display:block;margin-top:6px}
-input,textarea,select{width:100%;padding:12px;border:1px solid var(--ln);border-radius:10px;font:inherit;background:var(--card);color:var(--tx);margin:4px 0 6px}
-.chk{display:flex;gap:8px;align-items:flex-start;font-weight:400}.chk input{width:auto;margin-top:3px}
-button.btn{background:var(--teal);color:var(--navy);font-weight:700;border:0;border-radius:10px;padding:11px 14px;font-size:14px;margin:6px 6px 0 0}
-button.alt{background:transparent;border:2px solid var(--teal);color:var(--tx)}button.red{background:var(--bad);color:#fff}
-.login{max-width:400px;margin:6vh auto;padding:16px}
-.row{display:flex;gap:12px;align-items:center}.av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:var(--teal);display:grid;place-items:center;font-weight:800;flex:none}
+:root{--navy:#102A43;--teal:#00C2A8;--acc:#007A6C;--bg:#F3F6F9;--card:#fff;--text:#102A43;--mut:#5b6f82;--line:#dfe6ed;--warn:#b7791f;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1c2c;--card:#142f47;--text:#f3f6f9;--mut:#9fb3c6;--line:#24435f;--acc:#00C2A8}}
+:root[data-theme=dark]{--bg:#0b1c2c;--card:#142f47;--text:#f3f6f9;--mut:#9fb3c6;--line:#24435f;--acc:#00C2A8}
+*{box-sizing:border-box}html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
+#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:76px}
+.top{background:var(--navy);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.top h1{font-size:18px;margin:0;flex:1}.top button{background:none;border:0;color:#fff;font-size:20px;padding:4px 8px}
+.pg{padding:16px 18px}h2{font-size:20px;margin:6px 0 10px}h3{font-size:15px;margin:14px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.btn{display:block;width:100%;background:var(--teal);color:var(--navy);font-weight:700;border:0;border-radius:12px;padding:14px;font-size:16px;margin:10px 0;text-align:center}
+.btn.alt{background:transparent;border:2px solid var(--teal);color:var(--text)}.btn.sm{display:inline-block;width:auto;padding:8px 14px;font-size:14px;margin:4px 6px 0 0}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text);margin:4px 0 10px}
+label{font-size:13px;color:var(--mut);font-weight:600}
+.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}.row .fit{flex:none}
+.av{width:52px;height:52px;border-radius:50%;background:var(--navy);color:var(--teal);display:grid;place-items:center;font-weight:800;flex:none}
 .badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;display:inline-block}
-.b-v{background:#d9f7f1;color:#00695c}.b-r{background:#fdf0cf;color:#b7791f}.b-u{background:#e8edf2;color:#4a5d70}.b-x{background:#fbe0dc;color:#c0392b}
-.bub{padding:9px 12px;border-radius:14px;margin:6px 0;max-width:80%;white-space:pre-wrap;word-break:break-word}
-.bub.me{background:var(--teal);color:var(--navy);margin-left:auto}.bub.them{background:var(--bg);border:1px solid var(--ln)}
-#msgs{max-height:55vh;overflow:auto}.stars{color:#e9a400}.unread{border-left:4px solid var(--teal)}
-.pay{border-top:1px solid var(--ln);margin-top:8px;padding-top:6px}
-#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;max-width:90%;z-index:9}
-#toast.show{opacity:1}#toast.bad{background:var(--bad)}
-#modal{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-end;justify-content:center;z-index:6}
-#modal>div{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
-button.sm{padding:6px 11px;font-size:13px;margin:4px 5px 0 0}.card img,.card video{max-height:70vh;object-fit:contain;background:#0002}
-</style></head><body>
-<section class="login" id="auth">
-<h1 style="margin-bottom:0">Verilo</h1><p class="mut" style="margin-top:2px">Verify People. Build Trust.</p>
-<div class="seg"><button id="mLogin" class="on">Log in</button><button id="mSign">Sign up</button></div>
-<div id="signF" hidden>
-<select id="role"><option value="worker">I am a worker</option><option value="employer">I am an employer</option></select>
-<input id="nm" placeholder="Full name" autocomplete="name">
-<input id="ph" type="tel" placeholder="Phone, e.g. 08012345678" autocomplete="tel">
-<select id="stt"></select><input id="cty" placeholder="City or town">
-<select id="et" hidden><option value="household">Household</option><option value="business">Business</option></select>
-<label class="chk"><input type="checkbox" id="terms"> I agree to the Terms and Privacy Policy (NDPA)</label></div>
-<input id="em" type="email" placeholder="Email" autocomplete="username">
-<input id="pw" type="password" placeholder="Password (8 or more characters)" autocomplete="current-password">
-<button class="btn" id="go" style="width:100%">Log in</button>
-<p class="mut">Verification means documents were checked by an authorised admin. It does not guarantee a person’s behaviour or safety.</p></section>
-<div id="app" hidden><header><b>Verilo</b><small id="who"></small><button id="out">Log out</button></header>
-<nav id="tabs"></nav><main id="view"></main></div>
-<div id="modal" hidden></div><div id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+.b-v{background:#d9f7f1;color:#00695c}.b-r{background:#fdf0cf;color:var(--warn)}.b-u{background:#e8edf2;color:#4a5d70}.b-x{background:#fbe0dc;color:var(--bad)}
+.mut{color:var(--mut);font-size:13px}.fict{background:#fdf0cf;color:#6b4a0a;font-size:12px;padding:6px 10px;border-radius:8px;margin-bottom:10px}
+nav.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
+nav.tabs button{flex:1;background:none;border:0;padding:10px 2px;font-size:11px;color:var(--mut)}nav.tabs button b{display:block;font-size:20px}nav.tabs .on{color:var(--acc);font-weight:700}
+.hero{background:var(--navy);color:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px}
+.hero p{color:#b8c9d9}.hero .btn{max-width:320px}.hero .alt{color:#fff}
+.hero.splash{background:linear-gradient(165deg,#071a2b 0%,#102A43 55%,#0b3d4a 100%)}
+.hero h1.wm{font-size:48px;margin:6px 0 0;letter-spacing:-1px}.hero h2.tag{font-size:18px;margin:4px 0 8px}.hero em{color:#19e6cc;font-style:normal}
+.hero img.ph{width:100%;max-width:320px;border-radius:16px;margin:10px 0}
+.msg{padding:9px 12px;border-radius:14px;margin:6px 0;max-width:80%}.me{background:var(--teal);color:var(--navy);margin-left:auto}.them{background:var(--card);border:1px solid var(--line)}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat .card{margin:0}.stat b{font-size:24px;display:block}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:99px;padding:6px 12px;font-size:13px}.chip.on{background:var(--navy);color:#fff}
+.stars{color:#e9a400}[role=button]{cursor:pointer}:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+@media(min-width:900px){#app{max-width:520px;box-shadow:0 0 0 1px var(--line)}}
+</style></head><body><div id="app"></div>
 <script>
-const sb=supabase.createClient('https://maeraxyuwiwnlujctlzt.supabase.co','sb_publishable_gLotKP2jJGgtYaGD44bcmg_3K00b_qK');
-const $=id=>document.getElementById(id);
+const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const toast=(m,bad)=>{const t=$('toast');t.textContent=m;t.className='show'+(bad?' bad':'');setTimeout(()=>t.className='',4000)};
-const guard=async fn=>{try{await fn()}catch(e){toast(e.message||String(e),true)}};
-const rpc=async(n,a)=>{const{data,error}=await sb.rpc(n,a);if(error)throw error;return data};
-const num=v=>v===''||v==null?null:Number(v);
-const STN=["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT (Abuja)","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
-const VL={unverified:'Unverified',under_review:'Under review',verified:'Verified',rejected:'Rejected'},VC={verified:'b-v',under_review:'b-r',unverified:'b-u',rejected:'b-x'};
-const badge=s=>`<span class="badge ${VC[s]||'b-u'}">${esc(VL[s]||s)}</span>`;
-const opts=(a,sel,k,n)=>a.map(x=>`<option value="${esc(x[k])}"${String(x[k])===String(sel)?' selected':''}>${esc(x[n])}</option>`).join('');
-const ini=n=>String(n||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
-const when=d=>d?new Date(d).toLocaleString('en-GB'):'';
-const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
-const ngn=n=>n==null?'—':'₦'+Number(n).toLocaleString();
-const BS={requested:'Requested',negotiating:'Negotiating',accepted:'Accepted',awaiting_payment:'Awaiting payment',confirmed:'Confirmed',in_progress:'In progress',completed:'Completed',cancelled:'Cancelled',disputed:'Disputed'};
-const PS={reported_paid:'Reported as paid by the employer',receipt_confirmed:'Receipt confirmed by the worker',disputed:'Payment disputed',refunded:'Refunded'};
-const PM={direct_transfer:'Bank transfer',direct_cash:'Cash',direct_other:'Other direct method'};
-let me,W,ST=[],CT=[],mode='login',cur='',chat=null,subbed=false,BKm={};
-
-$('stt').innerHTML='<option value="">State</option>'+STN.map(s=>`<option>${esc(s)}</option>`).join('');
-$('role').onchange=()=>$('et').hidden=$('role').value!=='employer';
-function setMode(m){mode=m;$('signF').hidden=m!=='sign';$('mLogin').className=m==='login'?'on':'';$('mSign').className=m==='sign'?'on':'';$('go').textContent=m==='login'?'Log in':'Create account'}
-$('mLogin').onclick=()=>setMode('login');$('mSign').onclick=()=>setMode('sign');
-$('go').onclick=()=>guard(async()=>{
-  const email=$('em').value.trim(),password=$('pw').value;
-  if(mode==='login'){const{data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;return enter(data.user)}
-  if(!$('terms').checked)throw new Error('Please accept the Terms and Privacy Policy.');
-  if(!$('nm').value.trim()||!$('stt').value)throw new Error('Enter your name and choose your state.');
-  const role=$('role').value;
-  const{data,error}=await sb.auth.signUp({email,password,options:{data:{role,full_name:$('nm').value.trim(),phone:$('ph').value.trim(),state:$('stt').value,city:$('cty').value.trim(),employer_type:role==='employer'?$('et').value:'',accepted_terms:true}}});
-  if(error){throw new Error(/Database error/i.test(error.message)?'Could not create the account. Check your phone number format (e.g. 08012345678) and try again.':error.message)}
-  if(data.session)return enter(data.user);
-  toast('Account created. Check your email to confirm, then log in.');setMode('login');
-});
-$('out').onclick=async()=>{await sb.auth.signOut();location.reload()};
-sb.auth.getSession().then(({data})=>{if(data.session)guard(()=>enter(data.session.user))});
-
-async function enter(u){
-  const{data:p,error}=await sb.from('profiles').select('*').eq('id',u.id).single();if(error)throw error;
-  if(p.role==='admin'){await sb.auth.signOut();throw new Error('Admins should use the admin website.')}
-  if(p.status!=='active'){await sb.auth.signOut();throw new Error('This account is not active.')}
-  me=p;me.email=u.email;
-  const[s,c]=await Promise.all([sb.from('states').select('id,name').order('name'),sb.from('categories').select('id,slug,name').eq('active',true).order('name')]);
-  ST=s.data||[];CT=c.data||[];
-  $('auth').hidden=true;$('app').hidden=false;$('who').textContent=p.full_name;
-  const T=TABS[p.role];$('tabs').innerHTML=T.map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('');go(T[0][0]);
-  if(!subbed){subbed=true;sb.channel('rt-'+me.id)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+me.id},x=>{toast(x.new.title+(x.new.body?': '+x.new.body:''));refreshBadge();if(cur==='nt')guard(notifs)})
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},x=>addMsg(x.new)).subscribe()}
+const LOGO=(s=72)=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-label="Verilo logo"><path d="M32 4 56 13v18c0 15-10 25-24 29C18 56 8 46 8 31V13z" fill="#00C2A8"/><path d="M21 32l8 8 15-17" fill="none" stroke="#102A43" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const STATES=["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT (Abuja)","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
+const CATS=["Cleaner","Nanny","Cook","Driver","Caregiver","Security","Electrician","Plumber","Carpenter","Painter","Mechanic","Other artisan"];
+const W=[
+{n:"Amina Yusuf",c:"Cleaner",s:"Kano",ci:"Nassarawa",st:"Verified",r:4.8,rv:12,ex:6,av:true,p:12000},
+{n:"Chidi Okafor",c:"Electrician",s:"Lagos",ci:"Ikeja",st:"Under Review",r:4.5,rv:8,ex:9,av:true,p:18500},
+{n:"Funke Adeyemi",c:"Nanny",s:"Oyo",ci:"Ibadan",st:"Verified",r:4.9,rv:21,ex:11,av:false,p:15000},
+{n:"Musa Bello",c:"Driver",s:"FCT (Abuja)",ci:"Gwarinpa",st:"Unverified",r:0,rv:0,ex:4,av:true,p:14000},
+{n:"Ngozi Eze",c:"Cook",s:"Enugu",ci:"Independence Layout",st:"Verified",r:4.7,rv:15,ex:7,av:true,p:13000},
+{n:"Ibrahim Sani",c:"Plumber",s:"Kaduna",ci:"Barnawa",st:"Rejected",r:3.9,rv:3,ex:5,av:false,p:16000}];
+const BC={"Verified":"b-v","Under Review":"b-r","Unverified":"b-u","Rejected":"b-x"};
+const badge=s=>`<span class="badge ${BC[s]}">${esc(s)}</span>`;
+const HOME={worker:"wdash",employer:"edash",admin:"admin"};
+let S={role:null,screen:"splash",hist:[],f:{c:"All",s:"",q:""},sel:0,fav:new Set(),name:"Amina",vs:"Unverified",theme:"",
+chat:[["them","Good morning. Are you free Monday?"],["me","Yes, I can start at 8am."],["them","Great. I'll send the address here."]]};
+const tabsFor={worker:[["wdash","🏠","Home"],["msgs","💬","Messages"],["notifs","🔔","Alerts"],["reviews","⭐","Reviews"],["settings","⚙️","Settings"]],
+employer:[["edash","🏠","Home"],["find","🔍","Find"],["msgs","💬","Messages"],["notifs","🔔","Alerts"],["settings","⚙️","Settings"]],
+admin:[["admin","📊","Dashboard"],["settings","⚙️","Settings"],["help","❓","Help"]]};
+function setTheme(v){S.theme=v;if(v)document.documentElement.setAttribute("data-theme",v);else document.documentElement.removeAttribute("data-theme");try{localStorage.setItem("verilo_theme",v)}catch(e){}}
+try{const t=localStorage.getItem("verilo_theme");if(t)setTheme(t)}catch(e){}
+function go(s,back){if(!back)S.hist.push(S.screen);S.screen=s;render();scrollTo(0,0)}
+function back(){S.screen=S.hist.pop()||(S.role?HOME[S.role]:"welcome");render()}
+function hdr(t,canBack=true){return `<div class="top">${canBack?'<button onclick="back()" aria-label="Back">←</button>':''}<h1>${t}</h1>${LOGO(26)}</div>`}
+function toast(m){const d=document.createElement("div");d.textContent=m;d.setAttribute("role","status");d.style.cssText="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#102A43;color:#fff;padding:10px 16px;border-radius:10px;z-index:9;font-size:14px;max-width:90%;text-align:center";document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+const FICT='<div class="fict">Sample data — all workers, reviews, rates and statuses are fictional.</div>';
+const ngn=n=>"₦"+Number(n).toLocaleString();
+const ini=n=>esc(n.split(" ").map(x=>x[0]).join(""));
+const card=(w,i)=>`<div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="S.sel=${i};go('profile')"><div class="row"><div class="av fit">${ini(w.n)}</div><div><b>${esc(w.n)}</b><div class="mut">${esc(w.c)} · ${esc(w.ci)}, ${esc(w.s)} · ${ngn(w.p)}/day</div><div style="margin-top:4px">${badge(w.st)} <span class="mut">${w.rv?`<span class="stars">★</span> ${w.r} (${w.rv})`:"No reviews yet"}</span></div></div><button class="chip fit" aria-label="Save worker" onclick="event.stopPropagation();fav(${i})">${S.fav.has(i)?"♥":"♡"}</button></div></div>`;
+function fav(i){S.fav.has(i)?S.fav.delete(i):S.fav.add(i);render()}
+const sel=(id,arr,ph)=>`<select id="${id}"><option value="">${ph}</option>${arr.map(a=>`<option>${esc(a)}</option>`).join("")}</select>`;
+const val=id=>($("#"+id)||{}).value||"";
+function regW(){
+  if(!val("wn").trim()||!val("wp").trim()||!val("wo")||!val("wsx"))return toast("Please fill in name, phone, occupation and state.");
+  if(!$("#wc").checked)return toast("Please accept the Terms and Privacy Policy to continue.");
+  S.name=val("wn").trim().split(" ")[0];S.vs="Unverified";S.role="worker";S.hist=[];go("wdash");
 }
-const TABS={worker:[['wp','My profile'],['wv','Verification'],['bk','Bookings'],['ms','Messages'],['nt','Alerts'],['rv','My reviews'],['st','Settings']],employer:[['ef','Find workers'],['bk','Bookings'],['ms','Messages'],['nt','Alerts'],['st','Settings']]};
-const R={wp:wProfile,wv:wVerify,bk:bookings,ef:eFind,ms:msgs,nt:notifs,rv:wReviews,st:settings};
-function hl(t){cur=t;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
-function go(t){hl(t);chat=null;$('view').innerHTML='<p class="mut">Loading…</p>';guard(R[t]);refreshBadge()}
-$('tabs').onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.t)};
-async function refreshBadge(){const{count}=await sb.from('notifications').select('id',{count:'exact',head:true}).eq('user_id',me.id).is('read_at',null);const b=document.querySelector('#tabs [data-t=nt]');if(b)b.textContent='Alerts'+(count?` (${count})`:'')}
-async function loadW(){const{data,error}=await sb.from('worker_profiles').select('*').eq('user_id',me.id).maybeSingle();if(error)throw error;W=data}
-
-/* ---------- WORKER PROFILE & VERIFICATION ---------- */
-async function fillL(sid,sel){const el=$('pl');if(!sid){el.innerHTML='<option value="">Choose state first</option>';return}
-  const{data}=await sb.from('lgas').select('id,name').eq('state_id',sid).order('name');el.innerHTML='<option value="">Choose LGA</option>'+opts(data||[],sel,'id','name')}
-async function wProfile(){
-  await loadW();const defS=W?W.state_id:(ST.find(s=>s.name===me.state)||{}).id;
-  const AV=[['available','Available'],['busy','Busy'],['unavailable','Not available']].map(a=>({id:a[0],name:a[1]}));
-  $('view').innerHTML=`<div class="card"><b>${esc(me.full_name)}</b> ${W?badge(W.verification):''}<p class="mut">${W?'Keep your profile up to date.':'Complete your profile so employers can find you.'}</p>
-  <label>Occupation</label><select id="pc"><option value="">Choose…</option>${opts(CT,W&&W.category_id,'id','name')}</select>
-  <label>State</label><select id="ps"><option value="">Choose…</option>${opts(ST,defS,'id','name')}</select>
-  <label>LGA</label><select id="pl"></select>
-  <label>City or town</label><input id="pcity" value="${esc((W&&W.city)||me.city||'')}">
-  <label>Headline (max 80 characters)</label><input id="phd" maxlength="80" value="${esc(W&&W.headline||'')}">
-  <label>About you (max 800 characters)</label><textarea id="pbio" rows="4" maxlength="800">${esc(W&&W.bio||'')}</textarea>
-  <label>Years of experience</label><input id="pyr" type="number" min="0" max="60" value="${esc(W&&W.years_experience!=null?W.years_experience:'')}">
-  <label>Availability</label><select id="pav">${opts(AV,W&&W.availability,'id','name')}</select>
-  <label class="chk"><input type="checkbox" id="pvis" ${(!W||W.is_visible)?'checked':''}> Show my profile to employers</label>
-  <button class="btn" id="psave">Save profile</button></div>`;
-  fillL(defS,W&&W.lga_id);$('ps').onchange=()=>fillL($('ps').value,null);
-  $('psave').onclick=()=>guard(async()=>{
-    const row={category_id:num($('pc').value),state_id:num($('ps').value),lga_id:num($('pl').value),city:$('pcity').value.trim()||null,headline:$('phd').value.trim()||null,bio:$('pbio').value.trim()||null,years_experience:num($('pyr').value),availability:$('pav').value,is_visible:$('pvis').checked};
-    if(!row.category_id||!row.state_id)throw new Error('Choose your occupation and state.');
-    const{error}=W?await sb.from('worker_profiles').update(row).eq('user_id',me.id):await sb.from('worker_profiles').insert({user_id:me.id,...row});
-    if(error)throw error;toast('Profile saved');wProfile();
-  });
+function regE(){
+  if(!val("en").trim()||!val("ep").trim()||!val("es"))return toast("Please fill in name, phone or email, and state.");
+  if(!$("#ec").checked)return toast("Please accept the Terms and Privacy Policy to continue.");
+  S.name=val("en").trim().split(" ")[0];S.role="employer";S.hist=[];go("edash");
 }
-async function upl(f,tag,bucket='id-documents'){const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=`${me.id}/${tag}-${Date.now()}.${ext}`;
-  const{error}=await sb.storage.from(bucket).upload(path,f,{contentType:f.type});if(error)throw error;return path}
-async function wVerify(){
-  await loadW();
-  if(!W){$('view').innerHTML='<div class="card">Please complete and save your profile first (My profile tab).</div>';return}
-  const{data:L}=await sb.from('verification_requests').select('*').eq('worker_id',me.id).order('id',{ascending:false}).limit(1);
-  const last=(L||[])[0],pending=last&&last.status==='submitted',can=W.verification!=='verified'&&!pending;
-  let h=`<div class="card"><b>Your verification</b> ${badge(W.verification)}`;
-  if(W.verification==='verified')h+='<p>Your documents were checked by a Verilo admin. This does not guarantee behaviour or safety.</p>';
-  if(pending)h+='<p>Your documents are with our team for review. You will get a notification when there is an update.</p>';
-  if(last&&last.admin_note&&!pending)h+=`<p class="mut">Message from the reviewer: ${esc(last.admin_note)}</p>`;
-  h+='<p class="mut">Verification is free and is never affected by payments.</p></div>';
-  if(can)h+=`<div class="card"><b>Submit documents</b><p class="mut">Free. Photos are stored privately. Only authorised Verilo admins can view them, and they never appear on your profile.</p>
-  <label>ID type</label><select id="vt"><option value="nin_slip">NIN slip</option><option value="voters_card">Voter’s card</option><option value="drivers_licence">Driver’s licence</option><option value="intl_passport">International passport</option></select>
-  <label>Photo of your ID (max 5 MB)</label><input id="vid" type="file" accept="image/*,application/pdf">
-  <label>A clear selfie (max 5 MB)</label><input id="vsf" type="file" accept="image/*">
-  <label class="chk"><input type="checkbox" id="vc"> I consent to Verilo checking my documents and contacting my references.</label>
-  <button class="btn" id="vgo">Submit for review</button></div>`;
-  if(last&&last.status==='rejected')h+=`<div class="card"><b>Appeal this decision</b><textarea id="apm" rows="3" placeholder="Explain why the decision should be reviewed (10 or more characters)"></textarea><button class="btn alt" id="apgo">Send appeal</button></div>`;
-  $('view').innerHTML=h;
-  if($('vgo'))$('vgo').onclick=()=>guard(async()=>{
-    const a=$('vid').files[0],b=$('vsf').files[0];
-    if(!a||!b)throw new Error('Choose both your ID photo and a selfie.');
-    if(!$('vc').checked)throw new Error('Consent is needed before verification.');
-    if(a.size>5242880||b.size>5242880)throw new Error('Each file must be under 5 MB.');
-    $('vgo').disabled=true;toast('Uploading…');
-    const p1=await upl(a,'id'),p2=await upl(b,'selfie');
-    await rpc('submit_verification',{p_id_type:$('vt').value,p_id_doc_path:p1,p_selfie_path:p2,p_consent:true});
-    toast('Submitted for review');wVerify();
-  });
-  if($('apgo'))$('apgo').onclick=()=>guard(async()=>{await rpc('file_appeal',{p_verification_id:last.id,p_message:$('apm').value.trim()});toast('Appeal sent');wVerify()});
+function sendMsg(){const t=val("mi").trim();if(!t)return;S.chat.push(["me",t]);render()}
+function submitVerify(){
+  if(!val("vid"))return toast("Choose your ID type.");
+  if(!$("#vc").checked)return toast("Please give consent so we can check your documents.");
+  S.vs="Under Review";toast("Submitted. Status: Under Review");back();
 }
-async function wReviews(){
-  const[a,b]=await Promise.all([sb.from('worker_rating_summary').select('*').eq('worker_id',me.id).maybeSingle(),sb.from('public_reviews').select('*').eq('worker_id',me.id).order('created_at',{ascending:false})]);
-  const s=a.data,l=b.data||[];
-  $('view').innerHTML=`<div class="card"><b>${s?`<span class="stars">★</span> ${esc(s.average_rating)} average from ${esc(s.review_count)} review${Number(s.review_count)===1?'':'s'}`:'No reviews yet'}</b><p class="mut">Employers can review you after a completed job.</p></div>`+l.map(r=>`<div class="card"><span class="stars">${stars(r.rating)}</span><p>${esc(r.comment||'')}</p><div class="mut">${esc(r.reviewer_first_name)} · ${esc(when(r.created_at))}</div></div>`).join('');
-}
-
-/* ---------- EMPLOYER SEARCH ---------- */
-let F={state:'',cat:'',avail:'',ver:false,q:'',off:0};
-function eFind(){
-  F.off=0;
-  $('view').innerHTML=`<div class="card"><input id="fq" placeholder="Search name or skill" value="${esc(F.q)}">
-  <select id="fs"><option value="">All of Nigeria</option>${STN.map(s=>`<option${F.state===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
-  <select id="fc"><option value="">All occupations</option>${opts(CT,F.cat,'slug','name')}</select>
-  <select id="fa"><option value="">Any availability</option><option value="available">Available now</option></select>
-  <label class="chk"><input type="checkbox" id="fv" ${F.ver?'checked':''}> Verified workers only</label>
-  <button class="btn" id="fgo">Search</button></div><div id="res"></div>`;
-  $('fgo').onclick=()=>{F={state:$('fs').value,cat:$('fc').value,avail:$('fa').value,ver:$('fv').checked,q:$('fq').value.trim(),off:0};guard(search)};
-  guard(search);
-}
-async function search(){
-  const d=await rpc('search_workers',{p_state:F.state||null,p_category_slug:F.cat||null,p_availability:F.avail||null,p_verified_only:F.ver,p_query:F.q||null,p_limit:20,p_offset:F.off});
-  const tot=d.length?Number(d[0].total_count):0;let rt={};
-  if(d.length){const{data}=await sb.from('worker_rating_summary').select('*').in('worker_id',d.map(w=>w.user_id));rt=Object.fromEntries((data||[]).map(x=>[x.worker_id,x]))}
-  $('res').innerHTML=`<p class="mut">${tot} worker${tot===1?'':'s'} found</p>`+d.map(w=>{const r=rt[w.user_id];return `<div class="card"><div class="row"><div class="av">${esc(ini(w.full_name))}</div><div style="flex:1"><b>${esc(w.full_name)}</b><div class="mut">${esc(w.category||'')} · ${esc([w.city,w.lga,w.state].filter(Boolean).join(', '))}</div>${w.headline?`<div>${esc(w.headline)}</div>`:''}<div style="margin-top:4px">${badge(w.verification_status)} <span class="mut">${r?'<span class="stars">★</span> '+esc(r.average_rating)+' ('+esc(r.review_count)+') · ':''}${w.years_experience!=null?esc(w.years_experience)+' yrs · ':''}${w.availability==='available'?'Available':esc(w.availability)}</span></div></div></div><button class="btn" data-act="hire" data-id="${esc(w.user_id)}" data-n="${esc(w.full_name)}">Send hiring request</button><button class="btn alt" data-act="rep" data-id="${esc(w.user_id)}" data-n="${esc(w.full_name)}">Report</button></div>`}).join('')+
-  `<div>${F.off>0?'<button class="btn alt" data-act="pg" data-o="-20">← Previous</button>':''}${F.off+20<tot?'<button class="btn alt" data-act="pg" data-o="20">Next →</button>':''}</div>`;
-}
-function modal(html){const m=$('modal');m.hidden=false;m.innerHTML='<div>'+html+'<button class="btn alt" id="mclose">Close</button></div>';$('mclose').onclick=()=>{m.hidden=true}}
-function shut(){$('modal').hidden=true}
-function openHire(id,name){
-  modal(`<b>Hiring request for ${esc(name)}</b><label>Job title</label><input id="ht" maxlength="100" placeholder="e.g. Weekly house cleaning"><label>Details</label><textarea id="hd" rows="3" maxlength="1000"></textarea><label>Start date</label><input id="hs" type="date"><label>Location</label><input id="hl" maxlength="150" placeholder="Area, city, state"><label>Pay offer (₦)</label><input id="hp" type="number" min="0"><p class="mut">This starts a booking. You and the worker then agree the final terms, and a deposit is optional. Keep chat and payment details on Verilo. Never share OTP codes or bank PINs.</p><button class="btn" id="hsend">Send request</button>`);
-  $('hsend').onclick=()=>guard(async()=>{
-    if($('ht').value.trim().length<3)throw new Error('Enter a job title.');
-    await rpc('send_hire_request',{p_worker:id,p_title:$('ht').value.trim(),p_description:$('hd').value.trim()||null,p_start:$('hs').value||null,p_location:$('hl').value.trim()||null,p_pay:num($('hp').value)});
-    shut();toast('Request sent. Track it under Bookings.');
-  });
-}
-function openReport(id,name){
-  modal(`<b>Report ${esc(name)}</b><label>Reason</label><select id="rr"><option value="fake_profile">Fake profile</option><option value="fraud">Fraud or scam</option><option value="harassment">Harassment</option><option value="unsafe_behaviour">Unsafe behaviour</option><option value="fake_review">Fake review</option><option value="other">Other</option></select><label>Details (optional)</label><textarea id="rd" rows="3" maxlength="1000"></textarea><button class="btn red" id="rsend">Send report</button>`);
-  $('rsend').onclick=()=>guard(async()=>{await rpc('file_report',{p_target:id,p_reason:$('rr').value,p_details:$('rd').value.trim()||null});shut();toast('Report sent to Verilo admins')});
-}
-function openReview(id){
-  modal(`<b>Review this worker</b><label>Rating</label><select id="rt"><option value="5">5 – Excellent</option><option value="4">4 – Good</option><option value="3">3 – Okay</option><option value="2">2 – Poor</option><option value="1">1 – Very poor</option></select><label>Comment (optional)</label><textarea id="rc" rows="3" maxlength="600"></textarea><p class="mut">Reviews are tied to a completed job and can be checked by admins.</p><button class="btn" id="rsub">Submit review</button>`);
-  $('rsub').onclick=()=>guard(async()=>{await rpc('submit_review',{p_request:id,p_rating:Number($('rt').value),p_comment:$('rc').value.trim()||null});shut();toast('Review submitted');bookings()});
-}
-
-/* ---------- BOOKINGS ---------- */
-async function bookings(){
-  const d=await rpc('my_bookings');BKm=Object.fromEntries(d.map(b=>[b.id,b]));const ids=d.map(b=>b.id);let pays=[],cans=[],rfs=[];
-  if(ids.length){const[p,c,r]=await Promise.all([sb.from('booking_payments').select('*').in('booking_id',ids).order('id'),sb.from('cancellation_requests').select('*').in('booking_id',ids).eq('status','pending'),sb.from('refund_requests').select('*').in('booking_id',ids).eq('status','requested')]);pays=p.data||[];cans=c.data||[];rfs=r.data||[]}
-  $('view').innerHTML=(d.length?'':'<div class="card">No bookings yet.</div>')+d.map(b=>bCard(b,pays.filter(x=>x.booking_id===b.id),cans.find(x=>x.booking_id===b.id),rfs)).join('')+'<p class="mut">Payments made directly are records only. Verilo does not hold funds and does not verify direct payments.</p>';
-}
-function bCard(b,pays,can,rfs){
-  const emp=b.my_role==='employer',st=b.status,B=(a,l,c='')=>`<button class="btn ${c}" data-act="${a}" data-b="${b.id}" data-h="${b.hiring_request_id}">${l}</button>`;
-  let h=`<div class="card"><b>${esc(b.title)}</b> <span class="badge ${st==='disputed'||st==='cancelled'?'b-x':(st==='completed'||st==='confirmed')?'b-v':'b-u'}">${esc(BS[st]||st)}</span><div class="mut">${emp?'Worker':'Employer'}: ${esc(b.other_name)}</div>
-  <div style="margin-top:6px">Total ${ngn(b.total_price_ngn)} · Deposit ${b.deposit_ngn?ngn(b.deposit_ngn):'none'} · Balance ${ngn(b.balance_ngn)}</div>
-  <div class="mut">${esc(b.work_date||'Date not set')} · ${esc(b.location||'Location not set')} · ${b.payment_method==='direct'?'Direct payment':'Through Verilo'}</div>`;
-  if(['accepted','negotiating'].includes(st)){
-    h+=`<p class="mut">${b.i_confirmed?'You confirmed these terms. Waiting for the other party.':b.other_confirmed?'The other party confirmed these terms. Please review and confirm.':'Agree the price, date, location and whether a deposit is needed. A deposit is optional.'}</p>`;
-    h+=B('terms','Change terms','alt');if(!b.i_confirmed)h+=B('conf','Confirm these terms');
-  }
-  if(st==='requested')h+=emp?B('cnr','Cancel request','alt'):B('acc','Accept request')+B('dec','Decline','alt');
-  if(st==='awaiting_payment')h+='<p class="mut">Waiting for the deposit. The employer reports it and the worker confirms receipt.</p>';
-  if(st==='confirmed'&&!emp)h+=B('start','Start work');
-  if(st==='in_progress')h+=b.my_completed?'<p class="mut">You confirmed completion. Waiting for the other party.</p>':B('done','Confirm job complete');
-  if(emp&&['awaiting_payment','confirmed','in_progress','completed'].includes(st))h+=B('pay','Report a payment','alt');
-  if(st==='completed'&&emp&&!b.reviewed)h+=`<button class="btn" data-act="rev" data-id="${b.hiring_request_id}">Leave a review</button>`;
-  if(can)h+=can.requested_by===me.id?'<p class="mut">You asked to cancel. Waiting for a reply.</p>':`<p>The other party asked to cancel: “${esc(can.reason)}”</p><button class="btn" data-act="cany" data-id="${can.id}">Accept cancellation</button><button class="btn alt" data-act="cdec" data-id="${can.id}">Decline</button>`;
-  else if(['accepted','negotiating','awaiting_payment','confirmed','in_progress'].includes(st))h+=B('cxl','Request cancellation','alt');
-  if(!['requested','cancelled'].includes(st))h+=B('disp',b.open_dispute?'View dispute':'Report a problem','alt');
-  if(!['requested','accepted','negotiating','cancelled'].includes(st))h+=B('agree','View agreement','alt');
-  h+=`<button class="btn alt" data-act="chat" data-c="${b.conversation_id}" data-t="${esc(b.title)}" data-o="${esc(b.other_name)}">Message${b.unread>0?' ('+b.unread+' new)':''}</button>`;
-  h+=pays.map(p=>{const rf=rfs.find(r=>r.payment_id===p.id);return `<div class="pay"><div class="mut">${p.kind==='deposit'?'Deposit':'Balance'} ${ngn(p.amount_ngn)} · paid ${esc(p.paid_on)} · ${esc(PM[p.method]||p.method)}${p.reference?' · Ref '+esc(p.reference):''}</div><b>${esc(PS[p.status]||p.status)}</b>${p.note?` <span class="mut">— ${esc(p.note)}</span>`:''}<div>
-  ${p.evidence_path?`<button class="btn alt" data-act="evid" data-p="${esc(p.evidence_path)}">View receipt</button>`:''}
-  ${!emp&&p.status==='reported_paid'?`<button class="btn" data-act="pconf" data-pid="${p.id}">I received it</button><button class="btn red" data-act="pdis" data-pid="${p.id}">I did not receive it</button>`:''}
-  ${emp&&['reported_paid','receipt_confirmed'].includes(p.status)&&!rf?`<button class="btn alt" data-act="refund" data-pid="${p.id}" data-amt="${p.amount_ngn}">Request refund</button>`:''}
-  ${rf?(emp?`<span class="mut">Refund of ${ngn(rf.amount_ngn)} requested. Waiting for the worker.</span>`:`<span class="mut">Refund requested: ${ngn(rf.amount_ngn)} — “${esc(rf.reason)}”</span><button class="btn" data-act="rfa" data-id="${rf.id}">Approve refund</button><button class="btn alt" data-act="rfd" data-id="${rf.id}">Decline</button>`):''}
-  </div></div>`}).join('');
-  return h+'</div>';
-}
-function openTerms(bid){const b=BKm[bid];
-  modal(`<b>Booking terms</b><label>Job description</label><textarea id="td" rows="3" maxlength="1000">${esc(b.description||'')}</textarea>
-  <label>Total price (₦)</label><input id="tt" type="number" min="0" value="${esc(b.total_price_ngn==null?'':b.total_price_ngn)}">
-  <label>Deposit (₦). Optional. Leave 0 for no deposit.</label><input id="tdp" type="number" min="0" value="${esc(b.deposit_ngn||0)}">
-  <label>Work date</label><input id="tw" type="date" value="${esc(b.work_date||'')}">
-  <label>Location</label><input id="tl" maxlength="150" value="${esc(b.location||'')}">
-  <label>Payment method</label><select id="tm"><option value="direct">Direct payment (employer pays the worker)</option></select>
-  <label>Cancellation terms</label><textarea id="tc" rows="3" maxlength="1500">${esc(b.cancellation_terms||'')}</textarea>
-  <label>Other agreed terms (optional)</label><textarea id="to" rows="2" maxlength="1500">${esc(b.other_terms||'')}</textarea>
-  <p class="mut">A deposit can never be more than the total. Whoever changes the terms confirms them, and the other party must confirm too.</p><button class="btn" id="tsave">Save terms</button>`);
-  $('tsave').onclick=()=>guard(async()=>{
-    const t=num($('tt').value),dp=num($('tdp').value)||0;
-    if(t==null)throw new Error('Enter the total price.');if(dp>t)throw new Error('The deposit cannot be more than the total price.');
-    await rpc('propose_booking_terms',{p_booking:bid,p_description:$('td').value.trim(),p_total:t,p_deposit:dp,p_work_date:$('tw').value||null,p_location:$('tl').value.trim(),p_method:'direct',p_cancellation_terms:$('tc').value.trim(),p_other_terms:$('to').value.trim()});
-    shut();toast('Terms saved. The other party must confirm.');bookings();
-  });
-}
-function openPay(bid){const b=BKm[bid],dep=Math.max(0,b.deposit_ngn-b.deposit_confirmed),bal=Math.max(0,b.balance_ngn-b.balance_confirmed);
-  modal(`<b>Report a payment you made</b><p class="mut">This records what you say you paid. The worker must confirm they received it. Verilo does not verify direct payments.</p>
-  <label>Payment for</label><select id="pk"><option value="deposit">Deposit (up to ${ngn(dep)})</option><option value="balance"${b.deposit_ngn===0?' selected':''}>Remaining balance (up to ${ngn(bal)})</option></select>
-  <label>Amount paid (₦)</label><input id="pa" type="number" min="1"><label>Date paid</label><input id="pd" type="date" value="${new Date().toISOString().slice(0,10)}">
-  <label>How you paid</label><select id="pm"><option value="direct_transfer">Bank transfer</option><option value="direct_cash">Cash</option><option value="direct_other">Other</option></select>
-  <label>Transaction reference (optional)</label><input id="pr" maxlength="100"><label>Receipt photo (optional, max 5 MB)</label><input id="pf" type="file" accept="image/*,application/pdf">
-  <button class="btn" id="psend">Report payment</button>`);
-  $('psend').onclick=()=>guard(async()=>{
-    const amt=num($('pa').value);if(!amt||amt<=0)throw new Error('Enter the amount paid.');
-    const f=$('pf').files[0];if(f&&f.size>5242880)throw new Error('The receipt must be under 5 MB.');
-    const ev=f?await upl(f,'pay','payment-evidence'):null;
-    await rpc('report_booking_payment',{p_booking:bid,p_kind:$('pk').value,p_amount:amt,p_paid_on:$('pd').value,p_method:$('pm').value,p_reference:$('pr').value.trim()||null,p_evidence_path:ev});
-    shut();toast('Payment reported. The worker will be asked to confirm.');bookings();
-  });
-}
-async function openAgreement(bid){
-  const{data}=await sb.from('booking_agreements').select('*').eq('booking_id',bid).order('version',{ascending:false}).limit(1);const a=(data||[])[0];
-  if(!a){modal('<b>Agreement</b><p>No agreement has been confirmed yet.</p>');return}
-  const t=a.terms;modal(`<b>Booking agreement (version ${esc(a.version)})</b><p>Employer: ${esc(t.employer)}<br>Worker: ${esc(t.worker)}</p><p>${esc(t.description)}</p><p>Total ${ngn(t.total_price_ngn)}<br>Deposit ${t.deposit_ngn?ngn(t.deposit_ngn):'none'}<br>Balance ${ngn(t.balance_ngn)}<br>Payment: ${t.payment_method==='direct'?'Direct payment':'Through Verilo'}</p><p>Date: ${esc(t.work_date)}<br>Location: ${esc(t.location)}</p><p class="mut">Cancellation: ${esc(t.cancellation_terms||'—')}<br>Other: ${esc(t.other_terms||'—')}</p><p class="mut">Confirmed by the employer ${esc(when(a.employer_confirmed_at))} and by the worker ${esc(when(a.worker_confirmed_at))}.</p>`);
-}
-const DR=[['worker_no_show','Worker did not arrive'],['employer_unavailable','Employer was unavailable'],['work_not_completed','Work was not completed'],['work_different','Work was different from the agreement'],['payment_not_received','Payment was not received'],['deposit_disagreement','Deposit disagreement'],['cancellation_disagreement','Cancellation disagreement'],['other','Other problem']];
-async function openDispute(bid){
-  const{data:ds}=await sb.from('booking_disputes').select('*').eq('booking_id',bid).order('id',{ascending:false}).limit(1);const d=(ds||[])[0];
-  if(d&&d.status!=='resolved'){
-    const{data:ms}=await sb.from('booking_dispute_messages').select('*').eq('dispute_id',d.id).order('id');
-    modal(`<b>Dispute: ${esc((DR.find(r=>r[0]===d.reason)||[])[1]||d.reason)}</b><p class="mut">Status: ${esc(d.status.replace('_',' '))}. Verilo admins can review this. Add your explanation below.</p><p>${esc(d.details||'')}</p>${(ms||[]).map(m=>`<div class="bub ${m.author_id===me.id?'me':'them'}">${esc(m.body)}</div>`).join('')}<textarea id="dm" rows="3" maxlength="1500" placeholder="Your explanation"></textarea><button class="btn" id="dsend">Send</button>`);
-    $('dsend').onclick=()=>guard(async()=>{const t=$('dm').value.trim();if(!t)throw new Error('Write your explanation first.');await rpc('add_dispute_message',{p_dispute:d.id,p_body:t});openDispute(bid)});return}
-  modal(`${d?`<p class="mut">Last dispute resolved: ${esc(d.resolution_note||'')}</p>`:''}<b>Report a problem with this booking</b><label>What happened?</label><select id="dr">${DR.map(r=>`<option value="${r[0]}">${esc(r[1])}</option>`).join('')}</select><label>Details</label><textarea id="dd" rows="3" maxlength="1500"></textarea><p class="mut">Both parties can explain, and Verilo admins can review.</p><button class="btn red" id="dopen">Open dispute</button>`);
-  $('dopen').onclick=()=>guard(async()=>{await rpc('open_dispute',{p_booking:bid,p_reason:$('dr').value,p_details:$('dd').value.trim()||null});shut();toast('Dispute opened');bookings()});
-}
-
-/* ---------- MESSAGES ---------- */
-async function msgs(){
-  const d=await rpc('my_requests');
-  $('view').innerHTML=(d.length?'':'<div class="card">No conversations yet. They start when a hiring request is sent.</div>')+d.map(r=>`<div class="card" data-act="chat" data-c="${r.conversation_id}" data-t="${esc(r.title)}" data-o="${esc(r.other_name)}"><div class="row"><div class="av">${esc(ini(r.other_name))}</div><div style="flex:1"><b>${esc(r.other_name)}</b>${r.unread>0?` <span class="badge b-v">${r.unread} new</span>`:''}<div class="mut">${esc(r.title)} · ${esc(r.status)}</div></div></div></div>`).join('');
-}
-async function openChat(cid,title,other){
-  hl('ms');chat={cid,seen:new Set()};
-  const{data,error}=await sb.from('messages').select('*').eq('conversation_id',cid).order('id');if(error)throw error;
-  $('view').innerHTML=`<button class="btn alt" data-act="back">← Back</button><div class="card"><b>${esc(other)}</b><div class="mut">${esc(title)}</div></div><div id="msgs" class="card"></div><div class="row"><input id="mi" placeholder="Type a message" maxlength="2000" style="margin:0"><button class="btn" id="msend" style="margin:0">Send</button></div><p class="mut">Keep chat and payment details on Verilo. Never share OTP codes or bank PINs.</p>`;
-  (data||[]).forEach(addMsg);
-  $('msend').onclick=sendMsg;$('mi').onkeydown=e=>{if(e.key==='Enter')sendMsg()};
-  rpc('mark_messages_read',{p_conversation:cid}).catch(()=>{});
-}
-function addMsg(m){
-  const el=$('msgs');if(!el||!chat||m.conversation_id!==chat.cid||chat.seen.has(m.id))return;
-  chat.seen.add(m.id);const d=document.createElement('div');d.className='bub '+(m.sender_id===me.id?'me':'them');d.textContent=m.body;el.appendChild(d);el.scrollTop=el.scrollHeight;
-  if(m.sender_id!==me.id)rpc('mark_messages_read',{p_conversation:m.conversation_id}).catch(()=>{});
-}
-async function sendMsg(){
-  const i=$('mi'),t=i.value.trim();if(!t||!chat)return;i.value='';
-  try{const id=await rpc('send_message',{p_conversation:chat.cid,p_body:t});addMsg({id,sender_id:me.id,body:t,conversation_id:chat.cid})}catch(e){i.value=t;toast(e.message||String(e),true)}
-}
-
-/* ---------- ALERTS & SETTINGS ---------- */
-async function notifs(){
-  const{data,error}=await sb.from('notifications').select('*').eq('user_id',me.id).order('id',{ascending:false}).limit(50);if(error)throw error;
-  const un=data.filter(n=>!n.read_at).length;
-  $('view').innerHTML=(un?'<button class="btn alt" data-act="readall">Mark all as read</button>':'')+(data.length?'':'<div class="card">No alerts yet.</div>')+data.map(n=>`<div class="card${n.read_at?'':' unread'}"><b>${esc(n.title)}</b><div>${esc(n.body||'')}</div><div class="mut">${esc(when(n.created_at))}</div></div>`).join('');
-}
-async function settings(){
-  $('view').innerHTML=`<div class="card"><b>${esc(me.full_name)}</b><div class="mut">${esc(me.email||'')} · ${esc(me.role)}</div></div>
-  <div class="card"><b>Delete my account</b><p class="mut">This sends a deletion request to Verilo. Your account is closed and our team will remove your personal data and any documents you uploaded.</p><button class="btn red" data-act="del">Request account deletion</button></div>
-  <div class="card"><b>Need help?</b><p class="mut">Verification means documents were checked. It does not guarantee a person’s behaviour or safety. Use Report on a profile to flag anything suspicious.</p></div>`;
-}
-
-document.addEventListener('click',e=>{
-  const x=e.target.closest('[data-act]');if(!x)return;const a=x.dataset.act,id=x.dataset.id,bid=Number(x.dataset.b),hid=Number(x.dataset.h),pid=Number(x.dataset.pid);
-  const doit=(fn,after=bookings)=>guard(async()=>{await fn();toast('Done');after()});
-  if(a==='hire')openHire(id,x.dataset.n);
-  if(a==='rep')openReport(id,x.dataset.n);
-  if(a==='rev')openReview(Number(id));
-  if(a==='chat')guard(()=>openChat(Number(x.dataset.c),x.dataset.t,x.dataset.o));
-  if(a==='back')go('ms');
-  if(a==='pg'){F.off=Math.max(0,F.off+Number(x.dataset.o));guard(search);scrollTo(0,0)}
-  if(a==='acc')doit(()=>rpc('respond_hire_request',{p_id:hid,p_accept:true}));
-  if(a==='dec')doit(()=>rpc('respond_hire_request',{p_id:hid,p_accept:false}));
-  if(a==='cnr'&&confirm('Cancel this request?'))doit(()=>rpc('cancel_hire_request',{p_id:hid}));
-  if(a==='terms')openTerms(bid);
-  if(a==='conf')doit(()=>rpc('confirm_booking_terms',{p_booking:bid}));
-  if(a==='start')doit(()=>rpc('start_work',{p_booking:bid}));
-  if(a==='done'&&confirm('Confirm that this job is complete?'))doit(()=>rpc('confirm_completion',{p_booking:bid}));
-  if(a==='pay')openPay(bid);
-  if(a==='pconf')doit(()=>rpc('respond_booking_payment',{p_payment:pid,p_action:'confirm'}));
-  if(a==='pdis'){const n=prompt('What is wrong with this payment report?');if(n)doit(()=>rpc('respond_booking_payment',{p_payment:pid,p_action:'dispute',p_note:n}))}
-  if(a==='refund'){const r=prompt('Why are you asking for a refund?');if(r)doit(()=>rpc('request_refund',{p_payment:pid,p_amount:Number(x.dataset.amt),p_reason:r}))}
-  if(a==='rfa')doit(()=>rpc('respond_refund',{p_id:Number(id),p_approve:true}));
-  if(a==='rfd')doit(()=>rpc('respond_refund',{p_id:Number(id),p_approve:false}));
-  if(a==='cxl'){const r=prompt('Why do you want to cancel? (5 or more characters)');if(r)doit(()=>rpc('request_cancellation',{p_booking:bid,p_reason:r}))}
-  if(a==='cany')doit(()=>rpc('respond_cancellation',{p_id:Number(id),p_accept:true}));
-  if(a==='cdec')doit(()=>rpc('respond_cancellation',{p_id:Number(id),p_accept:false}));
-  if(a==='disp')guard(()=>openDispute(bid));
-  if(a==='agree')guard(()=>openAgreement(bid));
-  if(a==='evid')guard(async()=>{const{data,error}=await sb.storage.from('payment-evidence').createSignedUrl(x.dataset.p,60);if(error)throw error;window.open(data.signedUrl,'_blank')});
-  if(a==='readall')guard(async()=>{const{error}=await sb.from('notifications').update({read_at:new Date().toISOString()}).eq('user_id',me.id).is('read_at',null);if(error)throw error;notifs();refreshBadge()});
-  if(a==='del'&&confirm('Request deletion of your account? You will be logged out.'))guard(async()=>{await rpc('request_account_deletion');toast('Deletion request sent');await sb.auth.signOut();setTimeout(()=>location.reload(),1200)});
-});
-/* ================= STAGE 10: NETWORK & JOBS ================= */
-const KIND={update:'Update',work:'Completed work',achievement:'Achievement',availability:'Available for work',certificate:'Certificate or training',knowledge:'Tip or knowledge',opportunity:'Opportunity',business:'Business update'};
-const KINDS={worker:['update','work','achievement','availability','certificate','knowledge'],employer:['update','opportunity','business']};
-const CR=[['spam','Spam'],['fake_account','Fake account'],['harassment','Harassment or abuse'],['private_information','Private information'],['child_privacy','Private information about a child'],['copyright','Copyright (my work was copied)'],['inappropriate','Inappropriate content'],['other','Something else']];
-const JS_={applied:'Applied',viewed:'Viewed',shortlisted:'Shortlisted',rejected:'Not selected',hired:'Hired',withdrawn:'Withdrawn'};
-TABS.worker=[['hm','Home'],['nw','Network'],['np','+ Post'],['jb','Jobs'],['bk','Bookings'],['ms','Messages'],['nt','Alerts'],['pf','Profile'],['wp','Edit profile'],['wv','Verification'],['rv','My reviews'],['st','Settings']];
-TABS.employer=[['hm','Home'],['nw','Network'],['np','+ Post'],['jb','Jobs'],['ef','Find workers'],['bk','Bookings'],['ms','Messages'],['nt','Alerts'],['pf','Profile'],['st','Settings']];
-Object.assign(R,{hm:home,nw:network,np:newPost,jb:jobs,pf:()=>showProfile(me.id)});
-let FD={mode:'latest',off:0,user:null},JT='browse',JF={state:'',cat:'',q:''};
-
-/* ----- feed ----- */
-function home(){
-  FD={mode:FD.mode==='user'?'latest':FD.mode,off:0,user:null};
-  const B=(m,l)=>`<button data-n="mode" data-m="${m}" class="${FD.mode===m?'on':''}">${l}</button>`;
-  $('view').innerHTML=`<div class="seg">${B('latest','Latest')}${B('following','Following')}${B('trending','Trending')}</div><div id="feed"></div><div id="more"></div>`;
-  guard(()=>loadFeed(false));
-}
-async function loadFeed(append){
-  const mode=FD.mode==='latest'?'home':FD.mode;
-  const d=await rpc('get_feed',{p_mode:mode,p_user:FD.user,p_limit:10,p_offset:FD.off});
-  const el=$('feed');if(!append)el.innerHTML='';
-  if(!d.length&&!append)el.innerHTML='<div class="card">Nothing here yet. Follow people in Network, or write the first post.</div>';
-  const w=document.createElement('div');w.innerHTML=d.map(postCard).join('');while(w.firstChild)el.appendChild(w.firstChild);
-  FD.off+=d.length;$('more').innerHTML=d.length===10?'<button class="btn alt" data-n="more">Load more</button>':'';
-  signMedia(el);
-}
-async function signMedia(root){
-  const els=[...root.querySelectorAll('[data-mp]:not([src])')];if(!els.length)return;
-  const{data}=await sb.storage.from('post-media').createSignedUrls([...new Set(els.map(e=>e.dataset.mp))],3600);
-  const m=Object.fromEntries((data||[]).filter(x=>x.signedUrl).map(x=>[x.path,x.signedUrl]));
-  els.forEach(e=>{if(m[e.dataset.mp])e.src=m[e.dataset.mp]});
-}
-function postCard(p){
-  const media=(p.media||[]).map(m=>m.kind==='video'?`<video controls playsinline preload="metadata" data-mp="${esc(m.path)}" style="width:100%;border-radius:10px;margin-top:6px"></video>`:`<img data-mp="${esc(m.path)}" alt="Post photo" style="width:100%;border-radius:10px;margin-top:6px">`).join('');
-  const sh=p.shared_post_id?`<div class="card" style="margin:8px 0 0">${p.shared_author?`<b>${esc(p.shared_author)}</b><p>${esc(p.shared_body||'')}</p>`:'<span class="mut">The original post is not available.</span>'}</div>`:'';
-  return `<div class="card"><div class="row"><div class="av" data-n="prof" data-u="${esc(p.author_id)}" style="cursor:pointer">${esc(ini(p.author_name))}</div><div style="flex:1"><b data-n="prof" data-u="${esc(p.author_id)}" style="cursor:pointer">${esc(p.author_name)}</b> ${p.verification?badge(p.verification):''}<div class="mut">${esc(p.author_detail||p.author_role)} · ${esc(when(p.created_at))}</div></div></div>
-  <div class="mut" style="margin-top:6px">${esc(KIND[p.kind]||p.kind)}${p.is_promoted?' · <b>Promoted</b>':''}</div><p style="white-space:pre-wrap;margin:6px 0">${esc(p.body||'')}</p>${sh}${media}
-  <div style="margin-top:8px"><button class="btn alt sm" data-n="like" data-id="${p.id}">${p.liked?'♥':'♡'} ${p.like_count}</button><button class="btn alt sm" data-n="cmt" data-id="${p.id}">💬 ${p.comment_count}</button><button class="btn alt sm" data-n="share" data-id="${p.id}">↪ Share</button><button class="btn alt sm" data-n="menu" data-id="${p.id}" data-u="${esc(p.author_id)}" data-name="${esc(p.author_name)}">⋯</button></div></div>`;
-}
-async function openComments(pid){
-  const d=await rpc('get_comments',{p_post:pid,p_limit:50,p_offset:0});
-  modal(`<b>Comments</b>${d.length?d.map(c=>`<div class="bub them"><b>${esc(c.author_name)}</b><br>${esc(c.body)}<div class="mut">${esc(when(c.created_at))}</div>${c.author_id!==me.id?`<button class="btn alt sm" data-n="rc" data-id="${c.id}">Report</button>`:''}</div>`).join(''):'<p class="mut">No comments yet.</p>'}<textarea id="cm" rows="2" maxlength="1000" placeholder="Write a comment"></textarea><button class="btn" id="csend">Comment</button>`);
-  $('csend').onclick=()=>guard(async()=>{const t=$('cm').value.trim();if(!t)throw new Error('Write a comment first.');await rpc('add_comment',{p_post:pid,p_body:t});openComments(pid)});
-}
-function openShare(id){
-  modal(`<b>Share this post</b><p class="mut">It will appear on your profile and in your followers’ feeds.</p><textarea id="sc" rows="2" maxlength="1000" placeholder="Add a comment (optional)"></textarea><button class="btn" id="ssend">Share</button>`);
-  $('ssend').onclick=()=>guard(async()=>{await rpc('create_post',{p_kind:'update',p_body:$('sc').value.trim(),p_visibility:'public',p_media:[],p_shared:id});shut();toast('Shared');home()});
-}
-function openMenu(id,uid,name){
-  modal(uid===me.id?`<button class="btn red" data-n="del" data-id="${id}">Delete my post</button>`:`<button class="btn alt" data-n="rp" data-id="${id}">Report this post</button><button class="btn red" data-n="block" data-u="${esc(uid)}">Block ${esc(name)}</button>`);
-}
-function openContentReport(pid,cid){
-  modal(`<b>Report ${pid?'this post':'this comment'}</b><label>Reason</label><select id="cr">${CR.map(r=>`<option value="${r[0]}">${esc(r[1])}</option>`).join('')}</select><label>Details (for copyright, name your original work and where it was published)</label><textarea id="cd" rows="3" maxlength="1000"></textarea><button class="btn red" id="crs">Send report</button>`);
-  $('crs').onclick=()=>guard(async()=>{await rpc('report_content',{p_post:pid,p_comment:cid,p_reason:$('cr').value,p_details:$('cd').value.trim()||null});shut();toast('Report sent to Verilo admins')});
-}
-
-/* ----- create post ----- */
-function newPost(){
-  $('view').innerHTML=`<div class="card"><b>Create a post</b><label>Type</label><select id="nk">${KINDS[me.role].map(k=>`<option value="${k}">${esc(KIND[k])}</option>`).join('')}</select>
-  <label>What would you like to share?</label><textarea id="nb" rows="5" maxlength="2000"></textarea>
-  <label>Photos or videos (up to 6; photos 5 MB, videos 25 MB)</label><input id="nf" type="file" accept="image/*,video/*" multiple>
-  <label>Who can see this?</label><select id="nv"><option value="public">Everyone on Verilo</option><option value="followers">Only my followers</option></select>
-  <label class="chk"><input type="checkbox" id="nc"> I confirm this post does not show ID documents, phone or bank numbers, or private information about children.</label>
-  <button class="btn" id="npost">Publish</button></div>`;
-  $('npost').onclick=()=>guard(async()=>{
-    if(!$('nc').checked)throw new Error('Please tick the confirmation first.');
-    const fs=[...$('nf').files];if(fs.length>6)throw new Error('You can add up to 6 files.');
-    for(const f of fs){const v=f.type.startsWith('video/'),i=f.type.startsWith('image/');if(!v&&!i)throw new Error('Only photos and videos are allowed.');if(f.size>(v?26214400:5242880))throw new Error((v?'Videos must be under 25 MB.':'Photos must be under 5 MB.'))}
-    $('npost').disabled=true;toast('Publishing…');
-    const media=[];
-    for(let k=0;k<fs.length;k++){const f=fs[k],ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,''),path=`${me.id}/post-${Date.now()}-${k}.${ext}`;
-      const{error}=await sb.storage.from('post-media').upload(path,f,{contentType:f.type});if(error)throw error;media.push({kind:f.type.startsWith('video/')?'video':'image',path})}
-    try{await rpc('create_post',{p_kind:$('nk').value,p_body:$('nb').value.trim(),p_visibility:$('nv').value,p_media:media,p_shared:null})}
-    catch(e){$('npost').disabled=false;if(media.length)sb.storage.from('post-media').remove(media.map(m=>m.path));throw e}
-    toast('Posted');FD.mode='latest';go('hm');
-  });
-}
-
-/* ----- network & profiles ----- */
-async function network(){
-  const d=await rpc('suggest_people',{p_limit:30});
-  $('view').innerHTML='<p class="mut">People and businesses you may want to follow.</p>'+(d.length?'':'<div class="card">No suggestions right now.</div>')+d.map(u=>`<div class="card"><div class="row"><div class="av" data-n="prof" data-u="${esc(u.id)}" style="cursor:pointer">${esc(ini(u.full_name))}</div><div style="flex:1"><b data-n="prof" data-u="${esc(u.id)}" style="cursor:pointer">${esc(u.full_name)}</b> ${u.verification?badge(u.verification):''}<div class="mut">${esc(u.detail||u.role)}${u.state?' · '+esc(u.state):''} · ${esc(u.followers)} follower${Number(u.followers)===1?'':'s'}</div></div></div><button class="btn sm" data-n="follow" data-u="${esc(u.id)}">Follow</button><button class="btn alt sm" data-n="prof" data-u="${esc(u.id)}">View profile</button></div>`).join('');
-}
-async function showProfile(uid){
-  hl('pf');const d=await rpc('social_profile',{p_user:uid}),p=d[0];if(!p)throw new Error('This profile is not available.');
-  const own=uid===me.id;let rt='';
-  if(p.role==='worker'){const{data}=await sb.from('worker_rating_summary').select('*').eq('worker_id',uid).maybeSingle();if(data)rt=`<div><span class="stars">★</span> ${esc(data.average_rating)} (${esc(data.review_count)} reviews)</div>`}
-  FD={mode:'user',off:0,user:uid};
-  $('view').innerHTML=`<div class="card"><div class="row"><div class="av">${esc(ini(p.full_name))}</div><div style="flex:1"><b>${esc(p.full_name)}</b> ${p.verification?badge(p.verification):''}<div class="mut">${esc(p.detail||p.role)}${p.state?' · '+esc(p.state):''}${p.city?', '+esc(p.city):''}</div></div></div>
-  ${p.headline?`<p><b>${esc(p.headline)}</b></p>`:''}${p.bio?`<p>${esc(p.bio)}</p>`:''}${rt}<div class="mut">${esc(p.posts)} posts · ${esc(p.followers)} followers · ${esc(p.following)} following</div>
-  ${own?(me.role==='worker'?'<button class="btn" data-n="editp">Edit profile</button>':'')+'<button class="btn alt" data-n="newp">New post</button>':`<button class="btn" data-n="fprof" data-u="${esc(uid)}">${p.i_follow?'Following ✓':'Follow'}</button>${p.role==='worker'&&me.role==='employer'?`<button class="btn alt" data-n="hirew" data-u="${esc(uid)}" data-name="${esc(p.full_name)}">Send hiring request</button>`:''}<button class="btn alt" data-n="repu" data-u="${esc(uid)}" data-name="${esc(p.full_name)}">Report</button><button class="btn red" data-n="block" data-u="${esc(uid)}">Block</button>`}</div><h3>Posts</h3><div id="feed"></div><div id="more"></div>`;
-  loadFeed(false).catch(e=>toast(e.message,true));
-}
-
-/* ----- jobs ----- */
-function jobs(){me.role==='worker'?workerJobs():employerJobs()}
-const money=(a,b)=>a==null&&b==null?'Pay not stated':a!=null&&b!=null?`${ngn(a)} – ${ngn(b)}`:a!=null?`From ${ngn(a)}`:`Up to ${ngn(b)}`;
-async function workerJobs(){
-  $('view').innerHTML=`<div class="seg"><button data-n="jt" data-t="browse" class="${JT==='browse'?'on':''}">Browse jobs</button><button data-n="jt" data-t="apps" class="${JT==='apps'?'on':''}">My applications</button></div><div id="jb"></div>`;
-  if(JT==='apps'){
-    const d=await rpc('my_applications');
-    $('jb').innerHTML=(d.length?'':'<div class="card">You have not applied for any jobs yet.</div>')+d.map(a=>`<div class="card"><b>${esc(a.title)}</b><div class="mut">${esc(a.employer_name)} · applied ${esc(when(a.created_at))}</div><p><span class="badge b-u">${esc(JS_[a.status]||a.status)}</span>${a.job_status!=='open'?' <span class="mut">(job '+esc(a.job_status)+')</span>':''}</p>${['applied','viewed','shortlisted'].includes(a.status)?`<button class="btn alt sm" data-n="wd" data-id="${a.id}">Withdraw</button>`:''}</div>`).join('');return}
-  $('jb').innerHTML=`<div class="card"><input id="jq" placeholder="Search jobs" value="${esc(JF.q)}"><select id="jst"><option value="">All of Nigeria</option>${STN.map(s=>`<option${JF.state===s?' selected':''}>${esc(s)}</option>`).join('')}</select><select id="jca"><option value="">All occupations</option>${opts(CT,JF.cat,'slug','name')}</select><button class="btn" id="jgo">Search</button></div><div id="jres"></div>`;
-  $('jgo').onclick=()=>{JF={q:$('jq').value.trim(),state:$('jst').value,cat:$('jca').value};guard(runJobs)};
-  await runJobs();
-}
-async function runJobs(){
-  const d=await rpc('get_jobs',{p_state:JF.state||null,p_category_slug:JF.cat||null,p_query:JF.q||null,p_limit:20,p_offset:0});
-  $('jres').innerHTML=`<p class="mut">${d.length?(d[0].total_count>d.length?`Showing ${d.length} of ${d[0].total_count} jobs`:`${d.length} job${d.length===1?'':'s'}`):''}</p>`+(d.length?'':'<div class="card">No open jobs match your search.</div>')+d.map(j=>`<div class="card"><b>${esc(j.title)}</b><div class="mut"><span data-n="prof" data-u="${esc(j.employer_id)}" style="cursor:pointer;text-decoration:underline">${esc(j.employer_name)}</span> · ${esc(j.category||'Any occupation')} · ${esc([j.city,j.lga,j.state].filter(Boolean).join(', ')||'Nigeria')}</div><div>${money(j.pay_min_ngn,j.pay_max_ngn)}</div><p>${esc(j.description.length>300?j.description.slice(0,300)+'…':j.description)}</p>${j.requirements?`<p class="mut">Requirements: ${esc(j.requirements)}</p>`:''}<div class="mut">Closes ${esc(when(j.expires_at))}</div>${j.applied?'<span class="badge b-v">Applied ✓</span>':`<button class="btn sm" data-n="apply" data-id="${j.id}" data-title="${esc(j.title)}">Apply</button>`}</div>`).join('')+'<p class="mut">Never pay money to apply for a job. Report any job that asks for a fee.</p>';
-}
-function openApply(id,title){
-  modal(`<b>Apply: ${esc(title)}</b><p class="mut">The employer sees your name, occupation, location, verification status and ratings.</p><textarea id="am" rows="4" maxlength="1000" placeholder="Short message to the employer (optional)"></textarea><button class="btn" id="asend">Send application</button>`);
-  $('asend').onclick=()=>guard(async()=>{await rpc('apply_to_job',{p_job:id,p_message:$('am').value.trim()||null});shut();toast('Application sent');runJobs()});
-}
-async function employerJobs(){
-  const d=await rpc('my_jobs');
-  $('view').innerHTML=`<button class="btn" data-n="pjob">+ Post a job</button>`+(d.length?'':'<div class="card">You have not posted any jobs yet.</div>')+d.map(j=>`<div class="card"><b>${esc(j.title)}</b> <span class="badge b-u">${esc(j.status)}</span><div class="mut">${esc(j.applicants)} applicant${Number(j.applicants)===1?'':'s'}${j.new_applicants>0?` (${esc(j.new_applicants)} new)`:''} · closes ${esc(when(j.expires_at))}</div><button class="btn sm" data-n="appl" data-id="${j.id}" data-title="${esc(j.title)}">Applicants</button>${j.status==='open'?`<button class="btn alt sm" data-n="cjob" data-id="${j.id}">Close job</button>`:''}</div>`).join('');
-}
-function postJobModal(){
-  modal(`<b>Post a job</b><label>Job title</label><input id="jn1" maxlength="100"><label>Description</label><textarea id="jn2" rows="4" maxlength="2000"></textarea><label>Requirements (optional)</label><textarea id="jn3" rows="2" maxlength="1000"></textarea>
-  <label>Occupation</label><select id="jn4"><option value="">Choose…</option>${opts(CT,'','id','name')}</select><label>State</label><select id="jn5"><option value="">Choose…</option>${opts(ST,'','id','name')}</select><label>LGA</label><select id="jn6"><option value="">Choose state first</option></select><label>City or town</label><input id="jn7" maxlength="80">
-  <label>Pay from (₦, optional)</label><input id="jn8" type="number" min="0"><label>Pay up to (₦, optional)</label><input id="jn9" type="number" min="0"><label>Keep open for</label><select id="jn10"><option value="14">14 days</option><option value="30" selected>30 days</option><option value="60">60 days</option></select>
-  <p class="mut">Never ask workers for money, ID numbers or bank details in a job post. Fees for applying are not allowed.</p><button class="btn" id="jpost">Publish job</button>`);
-  $('jn5').onchange=async()=>{const s=$('jn5').value;if(!s){$('jn6').innerHTML='<option value="">Choose state first</option>';return}const{data}=await sb.from('lgas').select('id,name').eq('state_id',s).order('name');$('jn6').innerHTML='<option value="">Any LGA</option>'+opts(data||[],'','id','name')};
-  $('jpost').onclick=()=>guard(async()=>{
-    await rpc('create_job',{p_title:$('jn1').value.trim(),p_description:$('jn2').value.trim(),p_category_id:num($('jn4').value),p_state_id:num($('jn5').value),p_lga_id:num($('jn6').value),p_city:$('jn7').value.trim()||null,p_pay_min:num($('jn8').value),p_pay_max:num($('jn9').value),p_requirements:$('jn3').value.trim()||null,p_days:Number($('jn10').value)});
-    shut();toast('Job published');employerJobs();
-  });
-}
-async function openApplicants(jid,title){
-  const d=await rpc('job_applicants',{p_job:jid});
-  modal(`<b>Applicants: ${esc(title)}</b>`+(d.length?'':'<p class="mut">No applicants yet.</p>')+d.map(a=>`<div class="card" style="margin-top:8px"><b data-n="prof" data-u="${esc(a.worker_id)}" style="cursor:pointer">${esc(a.full_name)}</b> ${a.verification?badge(a.verification):''}<div class="mut">${esc(a.category||'')} · ${esc(a.state||'')}${a.avg_rating?` · ★ ${esc(a.avg_rating)} (${esc(a.review_count)})`:''}</div>${a.message?`<p>${esc(a.message)}</p>`:''}<p><span class="badge b-u">${esc(JS_[a.status]||a.status)}</span></p>
-  <button class="btn alt sm" data-n="ast" data-id="${a.application_id}" data-s="shortlisted" data-j="${jid}" data-title="${esc(title)}">Shortlist</button><button class="btn alt sm" data-n="ast" data-id="${a.application_id}" data-s="rejected" data-j="${jid}" data-title="${esc(title)}">Not selected</button><button class="btn sm" data-n="ast" data-id="${a.application_id}" data-s="hired" data-j="${jid}" data-title="${esc(title)}">Hired</button><button class="btn alt sm" data-n="hirew" data-u="${esc(a.worker_id)}" data-name="${esc(a.full_name)}">Send hiring request</button></div>`).join(''));
-}
-
-/* ----- clicks ----- */
-document.addEventListener('click',e=>{
-  const x=e.target.closest('[data-n]');if(!x)return;const a=x.dataset.n,id=Number(x.dataset.id),u=x.dataset.u,g=guard;
-  if(a==='mode'){FD.mode=x.dataset.m;home()}
-  if(a==='more')g(()=>loadFeed(true));
-  if(a==='prof'){shut();g(()=>showProfile(u))}
-  if(a==='like')g(async()=>{const cur0=Number(x.textContent.replace(/\D/g,''))||0,l=await rpc('toggle_like',{p_post:id});x.textContent=(l?'♥ ':'♡ ')+(cur0+(l?1:-1))});
-  if(a==='cmt')g(()=>openComments(id));
-  if(a==='share')openShare(id);
-  if(a==='menu')openMenu(id,u,x.dataset.name);
-  if(a==='rp')openContentReport(id,null);
-  if(a==='rc')openContentReport(null,id);
-  if(a==='repu')openReport(u,x.dataset.name);
-  if(a==='del'&&confirm('Delete this post?'))g(async()=>{await rpc('delete_post',{p_post:id});shut();toast('Deleted');cur==='pf'?showProfile(me.id):home()});
-  if(a==='block'&&confirm('Block this person? You will no longer see each other’s posts, profiles or jobs.'))g(async()=>{await rpc('toggle_block',{p_user:u});shut();toast('Blocked');go('hm')});
-  if(a==='follow')g(async()=>{const f=await rpc('toggle_follow',{p_user:u});x.textContent=f?'Following ✓':'Follow'});
-  if(a==='fprof')g(async()=>{const f=await rpc('toggle_follow',{p_user:u});toast(f?'Following':'Unfollowed');showProfile(u)});
-  if(a==='editp')go('wp');if(a==='newp')go('np');
-  if(a==='hirew')openHire(u,x.dataset.name);
-  if(a==='jt'){JT=x.dataset.t;jobs()}
-  if(a==='apply')openApply(id,x.dataset.title);
-  if(a==='wd')g(async()=>{await rpc('withdraw_application',{p_app:id});toast('Withdrawn');jobs()});
-  if(a==='pjob')postJobModal();
-  if(a==='appl')g(()=>openApplicants(id,x.dataset.title));
-  if(a==='cjob'&&confirm('Close this job? Applicants will no longer see it.'))g(async()=>{await rpc('close_job',{p_job:id,p_filled:false});toast('Job closed');employerJobs()});
-  if(a==='ast')g(async()=>{await rpc('set_application_status',{p_app:id,p_status:x.dataset.s});toast('Updated');openApplicants(Number(x.dataset.j),x.dataset.title)});
-});
+function sendHire(){if(!val("hd").trim())return toast("Describe the job first.");toast("Request sent");back()}
+function login(){if(!val("a1").trim()||!val("a2"))return toast("Enter your phone or email and password.");go("type")}
+const V={
+splash(){setTimeout(()=>S.screen=="splash"&&go("welcome",1),1600);return `<div class="hero splash">${LOGO(110)}<h1 class="wm">verilo</h1><p>Verify People. Build Trust.</p></div>`},
+welcome(){return `<div class="hero splash">${LOGO(84)}<h1 class="wm">verilo</h1><h2 class="tag">Verify People. <em>Build Trust.</em></h2><p>A trusted platform for workers, employers and opportunities in Nigeria.</p><img class="ph" src="splash.jpg" alt="A worker and an employer looking at a phone" onerror="this.remove()"><button class="btn" onclick="go('type')">Get Started →</button><button class="btn alt" onclick="go('auth')">Login</button><p style="font-size:12px">Verification confirms documents were checked. It does not guarantee a person's behaviour or safety.</p></div>`},
+auth(){return `${hdr("Log in")}<div class="pg"><label for="a1">Phone or email</label><input id="a1" placeholder="08012345678" autocomplete="username"><label for="a2">Password</label><input id="a2" type="password" placeholder="••••••••" autocomplete="current-password"><button class="btn" onclick="login()">Continue</button><button class="btn alt" onclick="go('type')">Create new account</button><p class="mut">Prototype only: no real login happens yet.</p></div>`},
+type(){return `${hdr("I am a…")}<div class="pg"><div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="go('wreg')"><h3>🧰 Worker</h3><p class="mut">Create a profile, get verified and receive job requests. Basic verification is free.</p></div><div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="go('ereg')"><h3>🏡 Employer</h3><p class="mut">Find and hire workers for your home or business.</p></div>${location.hash==="#demo"?`<p class="mut" style="text-align:center"><a href="#demo" onclick="S.role='admin';go('admin');return false">Admin demo</a></p>`:""}</div>`},
+wreg(){return `${hdr("Worker sign up")}<div class="pg"><label for="wn">Full name</label><input id="wn" autocomplete="name"><label for="wp">Phone number</label><input id="wp" type="tel" autocomplete="tel"><label for="wo">Occupation</label>${sel("wo",CATS,"Choose occupation")}<label for="wsx">State</label>${sel("wsx",STATES,"Choose state")}<label for="wl">City or LGA</label><input id="wl"><label for="wx">Years of experience</label><input id="wx" type="number" min="0"><label><input id="wc" type="checkbox" style="width:auto"> I agree to the Terms and Privacy Policy (NDPA)</label><button class="btn" onclick="regW()">Create profile</button></div>`},
+ereg(){return `${hdr("Employer sign up")}<div class="pg"><label for="en">Full name</label><input id="en" autocomplete="name"><label for="ep">Phone or email</label><input id="ep"><label for="es">State</label>${sel("es",STATES,"Choose state")}<label for="ez">Account type</label>${sel("ez",["Household","Business"],"Choose")}<label><input id="ec" type="checkbox" style="width:auto"> I agree to the Terms and Privacy Policy</label><button class="btn" onclick="regE()">Create account</button></div>`},
+wdash(){return `${hdr("Hello, "+esc(S.name),false)}<div class="pg"><div class="card"><div class="row"><div><b>Verification</b><div class="mut">${S.vs=="Unverified"?"Submit your documents to start review.":"Your documents are being checked by a Verilo admin."}</div></div><div class="fit">${badge(S.vs)}</div></div>${S.vs=="Unverified"?`<button class="btn sm" onclick="go('verify')">Start verification</button>`:""}</div><div class="stat"><div class="card"><b>2</b><span class="mut">New requests</span></div><div class="card"><b>0</b><span class="mut">Reviews</span></div></div><h3>Job requests</h3>${FICT}<div class="card"><b>Weekly house cleaning</b><div class="mut">Ikeja, Lagos · ${ngn(25000)} · Fictional employer</div><button class="btn sm" onclick="toast('Request accepted')">Accept</button><button class="btn sm alt" onclick="toast('Request declined')">Decline</button></div><div class="card"><div class="row"><label for="vis" style="color:var(--text);font-size:15px">Profile visible to employers</label><input id="vis" type="checkbox" checked class="fit" style="width:auto"></div></div></div>`},
+edash(){return `${hdr("Welcome, "+esc(S.name),false)}<div class="pg"><input placeholder="🔍 Search workers" aria-label="Search workers" onfocus="go('find')"><h3>Browse by occupation</h3><div class="stat">${CATS.slice(0,6).map(c=>`<div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="S.f.c='${c}';go('find')"><b>${c}</b></div>`).join("")}</div><h3>Saved workers</h3>${S.fav.size?[...S.fav].map(i=>card(W[i],i)).join(""):'<p class="mut">Tap ♡ on a worker to save them here.</p>'}</div>`},
+find(){const f=S.f,list=W.map((w,i)=>[w,i]).filter(([w])=>(f.c=="All"||w.c==f.c)&&(!f.s||w.s==f.s)&&(!f.q||(w.n+w.c).toLowerCase().includes(f.q.toLowerCase())));
+return `${hdr("Find workers")}<div class="pg">${FICT}<input id="q" aria-label="Search name or skill" placeholder="Search name or skill" value="${esc(f.q)}" oninput="S.f.q=this.value;render(1)"><div class="chips">${["All",...CATS].map(c=>`<button class="chip ${f.c==c?"on":""}" onclick="S.f.c='${c}';render()">${c}</button>`).join("")}</div><select aria-label="State" onchange="S.f.s=this.value;render()"><option value="">All of Nigeria</option>${STATES.map(s=>`<option ${f.s==s?"selected":""}>${s}</option>`).join("")}</select>${list.length?list.map(([w,i])=>card(w,i)).join(""):'<div class="card">No workers match. Try another state or occupation.</div>'}</div>`},
+profile(){const w=W[S.sel];return `${hdr("Worker profile")}<div class="pg">${FICT}<div class="card" style="text-align:center"><div class="av" style="margin:0 auto 8px;width:72px;height:72px;font-size:24px">${ini(w.n)}</div><h2 style="margin:0">${esc(w.n)}</h2><div class="mut">${esc(w.c)} · ${esc(w.ci)}, ${esc(w.s)}</div><p>${badge(w.st)}</p><p class="mut">${ngn(w.p)}/day · ${w.ex} years experience · ${w.av?"Available now":"Currently busy"}</p></div><div class="card mut">${w.st=="Verified"?"Documents checked by a Verilo admin. ID numbers are never shown. Verification does not guarantee behaviour or safety.":"Not yet verified. Consider this when deciding."}</div><button class="btn" onclick="go('hire')">Send hiring request</button><button class="btn alt" onclick="go('msgs')">Message</button><button class="btn alt" style="border-color:var(--bad)" onclick="toast('Report sent to admins')">Report profile</button></div>`},
+verify(){return `${hdr("Verify your identity")}<div class="pg"><div class="card"><div class="row"><b>Status</b><div class="fit">${badge(S.vs)}</div></div></div><label for="vid">ID type</label>${sel("vid",["NIN slip","Voter's card","Driver's licence","International passport"],"Choose ID")}<label for="vf1">ID photo (stored privately)</label><input id="vf1" type="file" accept="image/*"><label for="vf2">Selfie</label><input id="vf2" type="file" accept="image/*"><label for="vr1">Reference (optional): name and phone</label><input id="vr1" placeholder="Reference name"><input id="vr2" placeholder="Reference phone"><label><input id="vc" type="checkbox" style="width:auto"> I consent to Verilo checking my documents and contacting my reference.</label><button class="btn" onclick="submitVerify()">Submit for review</button><p class="mut">Free for workers. Only authorised admins can approve. Documents are never shown on your public profile.</p></div>`},
+hire(){const w=W[S.sel];return `${hdr("Hiring request")}<div class="pg"><div class="card"><b>${esc(w.n)}</b><div class="mut">${esc(w.c)} · ${ngn(w.p)}/day</div></div><label for="hd">Job description</label><textarea id="hd" rows="3"></textarea><label for="hs">Start date</label><input id="hs" type="date"><label for="hl">Location</label><input id="hl" placeholder="Area, city, state"><label for="hp">Pay offer (₦)</label><input id="hp" type="number"><button class="btn" onclick="sendHire()">Send request</button></div>`},
+msgs(){return `${hdr("Messages")}<div class="pg">${FICT}${S.chat.map(m=>`<div class="msg ${m[0]}">${esc(m[1])}</div>`).join("")}<div class="row" style="margin-top:14px"><input id="mi" aria-label="Type a message" placeholder="Type a message" style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn sm fit" onclick="sendMsg()">Send</button></div><p class="mut">Keep chats and payments on Verilo. Never share OTPs or pay deposits outside the app.</p></div>`},
+notifs(){return `${hdr("Notifications")}<div class="pg">${FICT}${[["New hiring request","Weekly house cleaning, Ikeja","2h"],["Verification update","Your documents are under review","1d"],["New review","A fictional employer rated you 5★","3d"]].map(n=>`<div class="card"><b>${n[0]}</b><div class="mut">${n[1]} · ${n[2]} ago</div></div>`).join("")}</div>`},
+reviews(){return `${hdr("Reviews")}<div class="pg">${FICT}<div class="card"><div class="stars">★★★★★</div><p>Punctual and careful. — Fictional employer</p></div><div class="card"><div class="stars">★★★★☆</div><p>Good work, arrived a bit late. — Fictional employer</p></div><p class="mut">Only employers with a completed job on Verilo can leave a review.</p></div>`},
+settings(){return `${hdr("Settings and privacy",false)}<div class="pg"><div class="card"><label for="th">Appearance</label><select id="th" onchange="setTheme(this.value)"><option value="">System default</option><option value="light" ${S.theme=="light"?"selected":""}>Light</option><option value="dark" ${S.theme=="dark"?"selected":""}>Dark</option></select></div><div class="card"><div class="row"><label for="sv" style="color:var(--text);font-size:15px">Show profile in search</label><input id="sv" type="checkbox" checked class="fit" style="width:auto"></div></div><div class="card"><div class="row"><label for="pn" style="color:var(--text);font-size:15px">Push notifications</label><input id="pn" type="checkbox" checked class="fit" style="width:auto"></div></div><button class="btn alt" onclick="toast('Correction request opened')">Correct my information</button><button class="btn alt" onclick="toast('Appeal form opened')">Appeal a decision</button><button class="btn alt" onclick="go('help')">Help and support</button><button class="btn alt" style="border-color:var(--bad)" onclick="if(confirm('Request deletion of your account?'))toast('Deletion request recorded')">Request account deletion</button><button class="btn" onclick="S.role=null;S.hist=[];go('welcome',1)">Log out</button></div>`},
+help(){return `${hdr("Help and support")}<div class="pg">${[["Does Verified mean safe?","No. It means a Verilo admin checked the documents. Always use your own judgement."],["Is verification free?","Yes, for workers."],["How do I report someone?","Open their profile and tap Report profile."]].map(q=>`<div class="card"><b>${q[0]}</b><div class="mut">${q[1]}</div></div>`).join("")}<button class="btn" onclick="toast('Support ticket opened')">Contact support</button></div>`},
+admin(){return `${hdr("Admin dashboard",false)}<div class="pg">${FICT}<div class="stat"><div class="card"><b>128</b><span class="mut">Registrations</span></div><div class="card"><b>9</b><span class="mut">Awaiting review</span></div><div class="card"><b>41</b><span class="mut">Hire requests</span></div><div class="card"><b>3</b><span class="mut">Open reports</span></div></div><h3>Verification queue</h3>${W.filter(w=>w.st!="Verified").map(w=>`<div class="card"><b>${esc(w.n)}</b> ${badge(w.st)}<div class="mut">${esc(w.c)} · ${esc(w.s)}</div><button class="btn sm" onclick="toast('Only after document review')">Approve</button><button class="btn sm alt" onclick="toast('Reject with reason')">Reject</button><button class="btn sm alt" onclick="toast('Info request sent')">Ask for info</button></div>`).join("")}<h3>Manage</h3><div class="chips"><span class="chip">Categories</span><span class="chip">Employers</span><span class="chip">Reports</span><span class="chip">Suspend</span><span class="chip">Audit log</span></div></div>`}};
+function render(keep){const sc=S.screen,h=V[sc]();
+const showTabs=S.role&&!["splash","welcome","auth","type"].includes(sc);
+$("#app").innerHTML=h+(showTabs?`<nav class="tabs">${tabsFor[S.role].map(t=>`<button class="${t[0]==sc?"on":""}" onclick="S.hist=[];go('${t[0]}',1)"><b>${t[1]}</b>${t[2]}</button>`).join("")}</nav>`:"");
+if(keep){const q=$("#q");if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}}
+render();
 </script></body></html>
