@@ -1,115 +1,132 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
 <title>Verilo — Verify People. Build Trust.</title>
 <style>
 :root{--navy:#102A43;--teal:#00C2A8;--acc:#007A6C;--bg:#F3F6F9;--card:#fff;--text:#102A43;--mut:#5b6f82;--line:#dfe6ed;--warn:#b7791f;--bad:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1c2c;--card:#142f47;--text:#f3f6f9;--mut:#9fb3c6;--line:#24435f;--acc:#00C2A8}}
 :root[data-theme=dark]{--bg:#0b1c2c;--card:#142f47;--text:#f3f6f9;--mut:#9fb3c6;--line:#24435f;--acc:#00C2A8}
-*{box-sizing:border-box}html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html{height:100%}
 body{margin:0;font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
-#app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:76px}
+#app{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:76px}
 .top{background:var(--navy);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
 .top h1{font-size:18px;margin:0;flex:1}.top button{background:none;border:0;color:#fff;font-size:20px;padding:4px 8px}
-.pg{padding:16px 18px}h2{font-size:20px;margin:6px 0 10px}h3{font-size:15px;margin:14px 0 6px}
+.pg{padding:16px 18px}h3{font-size:15px;margin:14px 0 6px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-.btn{display:block;width:100%;background:var(--teal);color:var(--navy);font-weight:700;border:0;border-radius:12px;padding:14px;font-size:16px;margin:10px 0;text-align:center}
-.btn.alt{background:transparent;border:2px solid var(--teal);color:var(--text)}.btn.sm{display:inline-block;width:auto;padding:8px 14px;font-size:14px;margin:4px 6px 0 0}
+.btn{display:block;width:100%;background:var(--teal);color:var(--navy);font-weight:700;border:0;border-radius:12px;padding:14px;font-size:16px;margin:10px 0}
+.btn.alt{background:transparent;border:2px solid var(--teal);color:var(--text)}.btn[disabled]{opacity:.6}
 input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--text);margin:4px 0 10px}
-label{font-size:13px;color:var(--mut);font-weight:600}
+label{font-size:13px;color:var(--mut);font-weight:600}.chk{display:flex;gap:8px;align-items:flex-start}.chk input{width:auto;margin-top:3px}
 .row{display:flex;gap:10px;align-items:center}.row>*{flex:1}.row .fit{flex:none}
-.av{width:52px;height:52px;border-radius:50%;background:var(--navy);color:var(--teal);display:grid;place-items:center;font-weight:800;flex:none}
-.badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;display:inline-block}
-.b-v{background:#d9f7f1;color:#00695c}.b-r{background:#fdf0cf;color:var(--warn)}.b-u{background:#e8edf2;color:#4a5d70}.b-x{background:#fbe0dc;color:var(--bad)}
-.mut{color:var(--mut);font-size:13px}.fict{background:#fdf0cf;color:#6b4a0a;font-size:12px;padding:6px 10px;border-radius:8px;margin-bottom:10px}
-nav.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
-nav.tabs button{flex:1;background:none;border:0;padding:10px 2px;font-size:11px;color:var(--mut)}nav.tabs button b{display:block;font-size:20px}nav.tabs .on{color:var(--acc);font-weight:700}
-.hero{background:var(--navy);color:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px}
-.hero p{color:#b8c9d9}.hero .btn{max-width:320px}.hero .alt{color:#fff}
-.hero.splash{background:linear-gradient(165deg,#071a2b 0%,#102A43 55%,#0b3d4a 100%)}
-.hero h1.wm{font-size:48px;margin:6px 0 0;letter-spacing:-1px}.hero h2.tag{font-size:18px;margin:4px 0 8px}.hero em{color:#19e6cc;font-style:normal}
-.hero img.ph{width:100%;max-width:320px;border-radius:16px;margin:10px 0}
-.msg{padding:9px 12px;border-radius:14px;margin:6px 0;max-width:80%}.me{background:var(--teal);color:var(--navy);margin-left:auto}.them{background:var(--card);border:1px solid var(--line)}
-.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat .card{margin:0}.stat b{font-size:24px;display:block}
+.av{width:52px;height:52px;border-radius:50%;background:var(--navy);color:var(--teal);display:grid;place-items:center;font-weight:800}
+.badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:#e8edf2;color:#4a5d70}
+.b-verified{background:#d9f7f1;color:#00695c}.b-under_review{background:#fdf0cf;color:var(--warn)}.b-rejected{background:#fbe0dc;color:var(--bad)}
+.mut{color:var(--mut);font-size:13px}
+.hero{background:linear-gradient(165deg,#071a2b,#102A43 55%,#0b3d4a);color:#fff;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px}
+.hero p{color:#b8c9d9}.hero .btn{max-width:320px}.hero .alt{color:#fff}.hero h1{font-size:44px;margin:6px 0}
+nav.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs button{flex:1;background:none;border:0;padding:10px 2px;font-size:11px;color:var(--mut)}nav.tabs b{display:block;font-size:20px}nav.tabs .on{color:var(--acc);font-weight:700}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:99px;padding:6px 12px;font-size:13px}.chip.on{background:var(--navy);color:#fff}
-.stars{color:#e9a400}[role=button]{cursor:pointer}:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-@media(min-width:900px){#app{max-width:520px;box-shadow:0 0 0 1px var(--line)}}
-</style></head><body><div id="app"></div>
+[role=button]{cursor:pointer}:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#102A43;color:#fff;padding:10px 16px;border-radius:10px;z-index:9;max-width:90%;text-align:center;display:none}
+</style></head><body><div id="app"></div><div id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-const $=s=>document.querySelector(s);
+/* ===== CONFIG: change these to match your database ===== */
+const URL_='https://maeraxyuwiwnlujctlzt.supabase.co', KEY='sb_publishable_gLotKP2jJGgtYaGD44bcmg_3K00b_qK'; // testnet. Swap for production at launch.
+const T={profiles:'profiles',verif:'verification_requests',hire:'hire_requests'};
+const P={cat:'category',exp:'years_experience',rate:'daily_rate_ngn',vs:'verification_status'}; // columns on profiles
+/* ======================================================= */
+const sb=supabase.createClient(URL_,KEY),$=s=>document.querySelector(s),val=id=>($('#'+id)||{}).value||'';
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LOGO=(s=72)=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-label="Verilo logo"><path d="M32 4 56 13v18c0 15-10 25-24 29C18 56 8 46 8 31V13z" fill="#00C2A8"/><path d="M21 32l8 8 15-17" fill="none" stroke="#102A43" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const STATES=["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT (Abuja)","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
 const CATS=["Cleaner","Nanny","Cook","Driver","Caregiver","Security","Electrician","Plumber","Carpenter","Painter","Mechanic","Other artisan"];
-const W=[
-{n:"Amina Yusuf",c:"Cleaner",s:"Kano",ci:"Nassarawa",st:"Verified",r:4.8,rv:12,ex:6,av:true,p:12000},
-{n:"Chidi Okafor",c:"Electrician",s:"Lagos",ci:"Ikeja",st:"Under Review",r:4.5,rv:8,ex:9,av:true,p:18500},
-{n:"Funke Adeyemi",c:"Nanny",s:"Oyo",ci:"Ibadan",st:"Verified",r:4.9,rv:21,ex:11,av:false,p:15000},
-{n:"Musa Bello",c:"Driver",s:"FCT (Abuja)",ci:"Gwarinpa",st:"Unverified",r:0,rv:0,ex:4,av:true,p:14000},
-{n:"Ngozi Eze",c:"Cook",s:"Enugu",ci:"Independence Layout",st:"Verified",r:4.7,rv:15,ex:7,av:true,p:13000},
-{n:"Ibrahim Sani",c:"Plumber",s:"Kaduna",ci:"Barnawa",st:"Rejected",r:3.9,rv:3,ex:5,av:false,p:16000}];
-const BC={"Verified":"b-v","Under Review":"b-r","Unverified":"b-u","Rejected":"b-x"};
-const badge=s=>`<span class="badge ${BC[s]}">${esc(s)}</span>`;
-const HOME={worker:"wdash",employer:"edash",admin:"admin"};
-let S={role:null,screen:"splash",hist:[],f:{c:"All",s:"",q:""},sel:0,fav:new Set(),name:"Amina",vs:"Unverified",theme:"",
-chat:[["them","Good morning. Are you free Monday?"],["me","Yes, I can start at 8am."],["them","Great. I'll send the address here."]]};
-const tabsFor={worker:[["wdash","🏠","Home"],["msgs","💬","Messages"],["notifs","🔔","Alerts"],["reviews","⭐","Reviews"],["settings","⚙️","Settings"]],
-employer:[["edash","🏠","Home"],["find","🔍","Find"],["msgs","💬","Messages"],["notifs","🔔","Alerts"],["settings","⚙️","Settings"]],
-admin:[["admin","📊","Dashboard"],["settings","⚙️","Settings"],["help","❓","Help"]]};
-function setTheme(v){S.theme=v;if(v)document.documentElement.setAttribute("data-theme",v);else document.documentElement.removeAttribute("data-theme");try{localStorage.setItem("verilo_theme",v)}catch(e){}}
-try{const t=localStorage.getItem("verilo_theme");if(t)setTheme(t)}catch(e){}
+const IDS=[["nin_slip","NIN slip"],["voters_card","Voter's card"],["drivers_licence","Driver's licence"],["intl_passport","International passport"]];
+const LOGO=s=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-label="Verilo logo"><path d="M32 4 56 13v18c0 15-10 25-24 29C18 56 8 46 8 31V13z" fill="#00C2A8"/><path d="M21 32l8 8 15-17" fill="none" stroke="#102A43" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ngn=n=>n==null?'—':'₦'+Number(n).toLocaleString(), ini=n=>esc((n||'?').split(' ').map(x=>x[0]).join(''));
+const label=s=>String(s||'unverified').replace(/_/g,' ');
+const badge=s=>`<span class="badge b-${esc(s)}">${esc(label(s))}</span>`;
+const sel=(id,arr,ph)=>`<select id="${id}"><option value="">${ph}</option>${arr.map(a=>Array.isArray(a)?`<option value="${a[0]}">${a[1]}</option>`:`<option>${esc(a)}</option>`).join('')}</select>`;
+const tabs={worker:[["wdash","🏠","Home"],["settings","⚙️","Settings"]],employer:[["find","🔍","Find"],["settings","⚙️","Settings"]]};
+let S={me:null,screen:'welcome',hist:[],list:[],sel:null,f:{c:'All',s:'',q:''},busy:false};
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3500)}
+async function run(fn){if(S.busy)return;S.busy=true;try{await fn()}catch(e){toast(e.message||String(e))}S.busy=false}
 function go(s,back){if(!back)S.hist.push(S.screen);S.screen=s;render();scrollTo(0,0)}
-function back(){S.screen=S.hist.pop()||(S.role?HOME[S.role]:"welcome");render()}
-function hdr(t,canBack=true){return `<div class="top">${canBack?'<button onclick="back()" aria-label="Back">←</button>':''}<h1>${t}</h1>${LOGO(26)}</div>`}
-function toast(m){const d=document.createElement("div");d.textContent=m;d.setAttribute("role","status");d.style.cssText="position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#102A43;color:#fff;padding:10px 16px;border-radius:10px;z-index:9;font-size:14px;max-width:90%;text-align:center";document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
-const FICT='<div class="fict">Sample data — all workers, reviews, rates and statuses are fictional.</div>';
-const ngn=n=>"₦"+Number(n).toLocaleString();
-const ini=n=>esc(n.split(" ").map(x=>x[0]).join(""));
-const card=(w,i)=>`<div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="S.sel=${i};go('profile')"><div class="row"><div class="av fit">${ini(w.n)}</div><div><b>${esc(w.n)}</b><div class="mut">${esc(w.c)} · ${esc(w.ci)}, ${esc(w.s)} · ${ngn(w.p)}/day</div><div style="margin-top:4px">${badge(w.st)} <span class="mut">${w.rv?`<span class="stars">★</span> ${w.r} (${w.rv})`:"No reviews yet"}</span></div></div><button class="chip fit" aria-label="Save worker" onclick="event.stopPropagation();fav(${i})">${S.fav.has(i)?"♥":"♡"}</button></div></div>`;
-function fav(i){S.fav.has(i)?S.fav.delete(i):S.fav.add(i);render()}
-const sel=(id,arr,ph)=>`<select id="${id}"><option value="">${ph}</option>${arr.map(a=>`<option>${esc(a)}</option>`).join("")}</select>`;
-const val=id=>($("#"+id)||{}).value||"";
-function regW(){
-  if(!val("wn").trim()||!val("wp").trim()||!val("wo")||!val("wsx"))return toast("Please fill in name, phone, occupation and state.");
-  if(!$("#wc").checked)return toast("Please accept the Terms and Privacy Policy to continue.");
-  S.name=val("wn").trim().split(" ")[0];S.vs="Unverified";S.role="worker";S.hist=[];go("wdash");
+function back(){S.screen=S.hist.pop()||'welcome';render()}
+const hdr=(t,b=true)=>`<div class="top">${b?'<button onclick="back()" aria-label="Back">←</button>':''}<h1>${t}</h1>${LOGO(26)}</div>`;
+const home=()=>S.me.role==='worker'?'wdash':'find';
+
+async function loadMe(){
+  const{data:{session}}=await sb.auth.getSession();if(!session){S.me=null;return}
+  const{data,error}=await sb.from(T.profiles).select('*').eq('id',session.user.id).single();
+  if(error||!data||data.status==='suspended'||data.role==='admin'){await sb.auth.signOut();S.me=null;if(data&&data.role==='admin')toast('Use the admin page for admin accounts.');return}
+  S.me=data;
 }
-function regE(){
-  if(!val("en").trim()||!val("ep").trim()||!val("es"))return toast("Please fill in name, phone or email, and state.");
-  if(!$("#ec").checked)return toast("Please accept the Terms and Privacy Policy to continue.");
-  S.name=val("en").trim().split(" ")[0];S.role="employer";S.hist=[];go("edash");
-}
-function sendMsg(){const t=val("mi").trim();if(!t)return;S.chat.push(["me",t]);render()}
-function submitVerify(){
-  if(!val("vid"))return toast("Choose your ID type.");
-  if(!$("#vc").checked)return toast("Please give consent so we can check your documents.");
-  S.vs="Under Review";toast("Submitted. Status: Under Review");back();
-}
-function sendHire(){if(!val("hd").trim())return toast("Describe the job first.");toast("Request sent");back()}
-function login(){if(!val("a1").trim()||!val("a2"))return toast("Enter your phone or email and password.");go("type")}
 const V={
-splash(){setTimeout(()=>S.screen=="splash"&&go("welcome",1),1600);return `<div class="hero splash">${LOGO(110)}<h1 class="wm">verilo</h1><p>Verify People. Build Trust.</p></div>`},
-welcome(){return `<div class="hero splash">${LOGO(84)}<h1 class="wm">verilo</h1><h2 class="tag">Verify People. <em>Build Trust.</em></h2><p>A trusted platform for workers, employers and opportunities in Nigeria.</p><img class="ph" src="splash.jpg" alt="A worker and an employer looking at a phone" onerror="this.remove()"><button class="btn" onclick="go('type')">Get Started →</button><button class="btn alt" onclick="go('auth')">Login</button><p style="font-size:12px">Verification confirms documents were checked. It does not guarantee a person's behaviour or safety.</p></div>`},
-auth(){return `${hdr("Log in")}<div class="pg"><label for="a1">Phone or email</label><input id="a1" placeholder="08012345678" autocomplete="username"><label for="a2">Password</label><input id="a2" type="password" placeholder="••••••••" autocomplete="current-password"><button class="btn" onclick="login()">Continue</button><button class="btn alt" onclick="go('type')">Create new account</button><p class="mut">Prototype only: no real login happens yet.</p></div>`},
-type(){return `${hdr("I am a…")}<div class="pg"><div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="go('wreg')"><h3>🧰 Worker</h3><p class="mut">Create a profile, get verified and receive job requests. Basic verification is free.</p></div><div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="go('ereg')"><h3>🏡 Employer</h3><p class="mut">Find and hire workers for your home or business.</p></div>${location.hash==="#demo"?`<p class="mut" style="text-align:center"><a href="#demo" onclick="S.role='admin';go('admin');return false">Admin demo</a></p>`:""}</div>`},
-wreg(){return `${hdr("Worker sign up")}<div class="pg"><label for="wn">Full name</label><input id="wn" autocomplete="name"><label for="wp">Phone number</label><input id="wp" type="tel" autocomplete="tel"><label for="wo">Occupation</label>${sel("wo",CATS,"Choose occupation")}<label for="wsx">State</label>${sel("wsx",STATES,"Choose state")}<label for="wl">City or LGA</label><input id="wl"><label for="wx">Years of experience</label><input id="wx" type="number" min="0"><label><input id="wc" type="checkbox" style="width:auto"> I agree to the Terms and Privacy Policy (NDPA)</label><button class="btn" onclick="regW()">Create profile</button></div>`},
-ereg(){return `${hdr("Employer sign up")}<div class="pg"><label for="en">Full name</label><input id="en" autocomplete="name"><label for="ep">Phone or email</label><input id="ep"><label for="es">State</label>${sel("es",STATES,"Choose state")}<label for="ez">Account type</label>${sel("ez",["Household","Business"],"Choose")}<label><input id="ec" type="checkbox" style="width:auto"> I agree to the Terms and Privacy Policy</label><button class="btn" onclick="regE()">Create account</button></div>`},
-wdash(){return `${hdr("Hello, "+esc(S.name),false)}<div class="pg"><div class="card"><div class="row"><div><b>Verification</b><div class="mut">${S.vs=="Unverified"?"Submit your documents to start review.":"Your documents are being checked by a Verilo admin."}</div></div><div class="fit">${badge(S.vs)}</div></div>${S.vs=="Unverified"?`<button class="btn sm" onclick="go('verify')">Start verification</button>`:""}</div><div class="stat"><div class="card"><b>2</b><span class="mut">New requests</span></div><div class="card"><b>0</b><span class="mut">Reviews</span></div></div><h3>Job requests</h3>${FICT}<div class="card"><b>Weekly house cleaning</b><div class="mut">Ikeja, Lagos · ${ngn(25000)} · Fictional employer</div><button class="btn sm" onclick="toast('Request accepted')">Accept</button><button class="btn sm alt" onclick="toast('Request declined')">Decline</button></div><div class="card"><div class="row"><label for="vis" style="color:var(--text);font-size:15px">Profile visible to employers</label><input id="vis" type="checkbox" checked class="fit" style="width:auto"></div></div></div>`},
-edash(){return `${hdr("Welcome, "+esc(S.name),false)}<div class="pg"><input placeholder="🔍 Search workers" aria-label="Search workers" onfocus="go('find')"><h3>Browse by occupation</h3><div class="stat">${CATS.slice(0,6).map(c=>`<div class="card" role="button" tabindex="0" onkeydown="if(event.key==='Enter')this.click()" onclick="S.f.c='${c}';go('find')"><b>${c}</b></div>`).join("")}</div><h3>Saved workers</h3>${S.fav.size?[...S.fav].map(i=>card(W[i],i)).join(""):'<p class="mut">Tap ♡ on a worker to save them here.</p>'}</div>`},
-find(){const f=S.f,list=W.map((w,i)=>[w,i]).filter(([w])=>(f.c=="All"||w.c==f.c)&&(!f.s||w.s==f.s)&&(!f.q||(w.n+w.c).toLowerCase().includes(f.q.toLowerCase())));
-return `${hdr("Find workers")}<div class="pg">${FICT}<input id="q" aria-label="Search name or skill" placeholder="Search name or skill" value="${esc(f.q)}" oninput="S.f.q=this.value;render(1)"><div class="chips">${["All",...CATS].map(c=>`<button class="chip ${f.c==c?"on":""}" onclick="S.f.c='${c}';render()">${c}</button>`).join("")}</div><select aria-label="State" onchange="S.f.s=this.value;render()"><option value="">All of Nigeria</option>${STATES.map(s=>`<option ${f.s==s?"selected":""}>${s}</option>`).join("")}</select>${list.length?list.map(([w,i])=>card(w,i)).join(""):'<div class="card">No workers match. Try another state or occupation.</div>'}</div>`},
-profile(){const w=W[S.sel];return `${hdr("Worker profile")}<div class="pg">${FICT}<div class="card" style="text-align:center"><div class="av" style="margin:0 auto 8px;width:72px;height:72px;font-size:24px">${ini(w.n)}</div><h2 style="margin:0">${esc(w.n)}</h2><div class="mut">${esc(w.c)} · ${esc(w.ci)}, ${esc(w.s)}</div><p>${badge(w.st)}</p><p class="mut">${ngn(w.p)}/day · ${w.ex} years experience · ${w.av?"Available now":"Currently busy"}</p></div><div class="card mut">${w.st=="Verified"?"Documents checked by a Verilo admin. ID numbers are never shown. Verification does not guarantee behaviour or safety.":"Not yet verified. Consider this when deciding."}</div><button class="btn" onclick="go('hire')">Send hiring request</button><button class="btn alt" onclick="go('msgs')">Message</button><button class="btn alt" style="border-color:var(--bad)" onclick="toast('Report sent to admins')">Report profile</button></div>`},
-verify(){return `${hdr("Verify your identity")}<div class="pg"><div class="card"><div class="row"><b>Status</b><div class="fit">${badge(S.vs)}</div></div></div><label for="vid">ID type</label>${sel("vid",["NIN slip","Voter's card","Driver's licence","International passport"],"Choose ID")}<label for="vf1">ID photo (stored privately)</label><input id="vf1" type="file" accept="image/*"><label for="vf2">Selfie</label><input id="vf2" type="file" accept="image/*"><label for="vr1">Reference (optional): name and phone</label><input id="vr1" placeholder="Reference name"><input id="vr2" placeholder="Reference phone"><label><input id="vc" type="checkbox" style="width:auto"> I consent to Verilo checking my documents and contacting my reference.</label><button class="btn" onclick="submitVerify()">Submit for review</button><p class="mut">Free for workers. Only authorised admins can approve. Documents are never shown on your public profile.</p></div>`},
-hire(){const w=W[S.sel];return `${hdr("Hiring request")}<div class="pg"><div class="card"><b>${esc(w.n)}</b><div class="mut">${esc(w.c)} · ${ngn(w.p)}/day</div></div><label for="hd">Job description</label><textarea id="hd" rows="3"></textarea><label for="hs">Start date</label><input id="hs" type="date"><label for="hl">Location</label><input id="hl" placeholder="Area, city, state"><label for="hp">Pay offer (₦)</label><input id="hp" type="number"><button class="btn" onclick="sendHire()">Send request</button></div>`},
-msgs(){return `${hdr("Messages")}<div class="pg">${FICT}${S.chat.map(m=>`<div class="msg ${m[0]}">${esc(m[1])}</div>`).join("")}<div class="row" style="margin-top:14px"><input id="mi" aria-label="Type a message" placeholder="Type a message" style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn sm fit" onclick="sendMsg()">Send</button></div><p class="mut">Keep chats and payments on Verilo. Never share OTPs or pay deposits outside the app.</p></div>`},
-notifs(){return `${hdr("Notifications")}<div class="pg">${FICT}${[["New hiring request","Weekly house cleaning, Ikeja","2h"],["Verification update","Your documents are under review","1d"],["New review","A fictional employer rated you 5★","3d"]].map(n=>`<div class="card"><b>${n[0]}</b><div class="mut">${n[1]} · ${n[2]} ago</div></div>`).join("")}</div>`},
-reviews(){return `${hdr("Reviews")}<div class="pg">${FICT}<div class="card"><div class="stars">★★★★★</div><p>Punctual and careful. — Fictional employer</p></div><div class="card"><div class="stars">★★★★☆</div><p>Good work, arrived a bit late. — Fictional employer</p></div><p class="mut">Only employers with a completed job on Verilo can leave a review.</p></div>`},
-settings(){return `${hdr("Settings and privacy",false)}<div class="pg"><div class="card"><label for="th">Appearance</label><select id="th" onchange="setTheme(this.value)"><option value="">System default</option><option value="light" ${S.theme=="light"?"selected":""}>Light</option><option value="dark" ${S.theme=="dark"?"selected":""}>Dark</option></select></div><div class="card"><div class="row"><label for="sv" style="color:var(--text);font-size:15px">Show profile in search</label><input id="sv" type="checkbox" checked class="fit" style="width:auto"></div></div><div class="card"><div class="row"><label for="pn" style="color:var(--text);font-size:15px">Push notifications</label><input id="pn" type="checkbox" checked class="fit" style="width:auto"></div></div><button class="btn alt" onclick="toast('Correction request opened')">Correct my information</button><button class="btn alt" onclick="toast('Appeal form opened')">Appeal a decision</button><button class="btn alt" onclick="go('help')">Help and support</button><button class="btn alt" style="border-color:var(--bad)" onclick="if(confirm('Request deletion of your account?'))toast('Deletion request recorded')">Request account deletion</button><button class="btn" onclick="S.role=null;S.hist=[];go('welcome',1)">Log out</button></div>`},
-help(){return `${hdr("Help and support")}<div class="pg">${[["Does Verified mean safe?","No. It means a Verilo admin checked the documents. Always use your own judgement."],["Is verification free?","Yes, for workers."],["How do I report someone?","Open their profile and tap Report profile."]].map(q=>`<div class="card"><b>${q[0]}</b><div class="mut">${q[1]}</div></div>`).join("")}<button class="btn" onclick="toast('Support ticket opened')">Contact support</button></div>`},
-admin(){return `${hdr("Admin dashboard",false)}<div class="pg">${FICT}<div class="stat"><div class="card"><b>128</b><span class="mut">Registrations</span></div><div class="card"><b>9</b><span class="mut">Awaiting review</span></div><div class="card"><b>41</b><span class="mut">Hire requests</span></div><div class="card"><b>3</b><span class="mut">Open reports</span></div></div><h3>Verification queue</h3>${W.filter(w=>w.st!="Verified").map(w=>`<div class="card"><b>${esc(w.n)}</b> ${badge(w.st)}<div class="mut">${esc(w.c)} · ${esc(w.s)}</div><button class="btn sm" onclick="toast('Only after document review')">Approve</button><button class="btn sm alt" onclick="toast('Reject with reason')">Reject</button><button class="btn sm alt" onclick="toast('Info request sent')">Ask for info</button></div>`).join("")}<h3>Manage</h3><div class="chips"><span class="chip">Categories</span><span class="chip">Employers</span><span class="chip">Reports</span><span class="chip">Suspend</span><span class="chip">Audit log</span></div></div>`}};
-function render(keep){const sc=S.screen,h=V[sc]();
-const showTabs=S.role&&!["splash","welcome","auth","type"].includes(sc);
-$("#app").innerHTML=h+(showTabs?`<nav class="tabs">${tabsFor[S.role].map(t=>`<button class="${t[0]==sc?"on":""}" onclick="S.hist=[];go('${t[0]}',1)"><b>${t[1]}</b>${t[2]}</button>`).join("")}</nav>`:"");
-if(keep){const q=$("#q");if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}}
-render();
+welcome:()=>`<div class="hero">${LOGO(84)}<h1>verilo</h1><p>Verify People. Build Trust.<br>A trusted platform for workers and employers in Nigeria.</p><button class="btn" onclick="go('type')">Get started</button><button class="btn alt" onclick="go('login')">Log in</button><p style="font-size:12px">Verification confirms documents were checked. It does not guarantee a person's behaviour or safety.</p></div>`,
+login:()=>`${hdr('Log in')}<div class="pg"><label for="em">Email</label><input id="em" type="email" autocomplete="username"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"><button class="btn" onclick="doLogin()">Log in</button><button class="btn alt" onclick="go('type')">Create account</button></div>`,
+type:()=>`${hdr('I am a…')}<div class="pg"><div class="card" role="button" tabindex="0" onclick="S.role='worker';go('signup')"><h3>🧰 Worker</h3><p class="mut">Create a profile, get verified, receive job requests. Free.</p></div><div class="card" role="button" tabindex="0" onclick="S.role='employer';go('signup')"><h3>🏡 Employer</h3><p class="mut">Find and hire workers for your home or business.</p></div></div>`,
+signup:()=>{const w=S.role==='worker';return `${hdr(w?'Worker sign up':'Employer sign up')}<div class="pg"><label for="n">Full name</label><input id="n" autocomplete="name"><label for="em">Email</label><input id="em" type="email" autocomplete="username"><label for="pw">Password (8+ characters)</label><input id="pw" type="password" autocomplete="new-password"><label for="ph">Phone number</label><input id="ph" type="tel" autocomplete="tel"><label for="st">State</label>${sel('st',STATES,'Choose state')}<label for="ci">City or LGA</label><input id="ci">${w?`<label for="oc">Occupation</label>${sel('oc',CATS,'Choose occupation')}<label for="ex">Years of experience</label><input id="ex" type="number" min="0"><label for="rt">Daily rate (₦)</label><input id="rt" type="number" min="0">`:''}<label class="chk"><input id="ag" type="checkbox"> I agree to the Terms and Privacy Policy (NDPA)</label><button class="btn" onclick="doSignup()">Create account</button></div>`},
+wdash:()=>{const v=S.me[P.vs]||'unverified',r=S.req;const st=r?r.status:v;
+  return `${hdr('Hello, '+esc((S.me.full_name||'').split(' ')[0]),false)}<div class="pg"><div class="card"><div class="row"><div><b>Verification</b><div class="mut">${v==='verified'?'Your documents were checked by a Verilo admin.':st==='under_review'?'A Verilo admin is checking your documents.':st==='rejected'||st==='request_info'?'Reason: '+esc(r&&r.admin_note||'See support.'):'Submit your documents to start review.'}</div></div><div class="fit">${badge(v==='verified'?'verified':st)}</div></div>${v!=='verified'&&st!=='under_review'?`<button class="btn" onclick="go('verify')">${r?'Submit again':'Start verification'}</button>`:''}</div><p class="mut">Verification is free. It does not guarantee behaviour or safety.</p></div>`},
+verify:()=>`${hdr('Verify your identity')}<div class="pg"><label for="vid">ID type</label>${sel('vid',IDS,'Choose ID')}<label for="f1">ID photo (stored privately)</label><input id="f1" type="file" accept="image/*,application/pdf"><label for="f2">Selfie</label><input id="f2" type="file" accept="image/*"><label class="chk"><input id="vc" type="checkbox"> I consent to Verilo checking my documents.</label><button class="btn" onclick="doVerify()">Submit for review</button><p class="mut">Documents are never shown on your public profile.</p></div>`,
+find:()=>{const f=S.f,l=S.list.filter(w=>(f.c==='All'||w[P.cat]===f.c)&&(!f.s||w.state===f.s)&&(!f.q||((w.full_name||'')+(w[P.cat]||'')).toLowerCase().includes(f.q.toLowerCase())));
+  return `${hdr('Find workers',false)}<div class="pg"><input id="q" aria-label="Search" placeholder="Search name or skill" value="${esc(f.q)}" oninput="S.f.q=this.value;render(1)"><div class="chips">${['All',...CATS].map(c=>`<button class="chip ${f.c===c?'on':''}" onclick="S.f.c='${c}';render()">${c}</button>`).join('')}</div><select aria-label="State" onchange="S.f.s=this.value;render()"><option value="">All of Nigeria</option>${STATES.map(s=>`<option ${f.s===s?'selected':''}>${s}</option>`).join('')}</select>${l.length?l.map(w=>`<div class="card" role="button" tabindex="0" onclick="S.sel='${esc(w.id)}';go('profile')"><div class="row"><div class="av fit">${ini(w.full_name)}</div><div><b>${esc(w.full_name)}</b><div class="mut">${esc(w[P.cat]||'Worker')} · ${esc(w.city||'')} ${esc(w.state||'')} · ${ngn(w[P.rate])}/day</div><div style="margin-top:4px">${badge(w[P.vs]||'unverified')}</div></div></div></div>`).join(''):'<div class="card">No workers match. Try another state or occupation.</div>'}</div>`},
+profile:()=>{const w=S.list.find(x=>x.id===S.sel);if(!w)return `${hdr('Worker profile')}<div class="pg">Worker not found.</div>`;
+  return `${hdr('Worker profile')}<div class="pg"><div class="card" style="text-align:center"><div class="av" style="margin:0 auto 8px;width:72px;height:72px;font-size:24px">${ini(w.full_name)}</div><h2 style="margin:0">${esc(w.full_name)}</h2><div class="mut">${esc(w[P.cat]||'')} · ${esc(w.city||'')} ${esc(w.state||'')}</div><p>${badge(w[P.vs]||'unverified')}</p><p class="mut">${ngn(w[P.rate])}/day · ${esc(w[P.exp]??0)} years experience</p></div><div class="card mut">${w[P.vs]==='verified'?'Documents checked by a Verilo admin. ID numbers are never shown. Verification does not guarantee behaviour or safety.':'Not yet verified. Consider this when deciding.'}</div><button class="btn" onclick="go('hire')">Send hiring request</button></div>`},
+hire:()=>{const w=S.list.find(x=>x.id===S.sel)||{};return `${hdr('Hiring request')}<div class="pg"><div class="card"><b>${esc(w.full_name)}</b><div class="mut">${esc(w[P.cat]||'')} · ${ngn(w[P.rate])}/day</div></div><label for="hd">Job description</label><textarea id="hd" rows="3"></textarea><label for="hs">Start date</label><input id="hs" type="date"><label for="hl">Location</label><input id="hl" placeholder="Area, city, state"><label for="hp">Pay offer (₦)</label><input id="hp" type="number" min="0"><button class="btn" onclick="doHire()">Send request</button></div>`},
+settings:()=>`${hdr('Settings',false)}<div class="pg"><div class="card"><label for="th">Appearance</label><select id="th" onchange="setTheme(this.value)"><option value="">System default</option><option value="light">Light</option><option value="dark">Dark</option></select></div><button class="btn alt" onclick="run(reqDelete)">Request account deletion</button><button class="btn" onclick="doLogout()">Log out</button></div>`
+};
+function setTheme(v){v?document.documentElement.setAttribute('data-theme',v):document.documentElement.removeAttribute('data-theme');try{localStorage.setItem('verilo_theme',v)}catch(e){}}
+try{const t=localStorage.getItem('verilo_theme');if(t)setTheme(t)}catch(e){}
+
+async function data(){ // load what the current screen needs
+  if(!S.me)return;
+  if(S.screen==='wdash'){const{data:r}=await sb.from(T.verif).select('*').eq('worker_id',S.me.id).order('id',{ascending:false}).limit(1);S.req=r&&r[0]||null}
+  if(['find','profile','hire'].includes(S.screen)&&!S.list.length){
+    const{data:l,error}=await sb.from(T.profiles).select('*').eq('role','worker').eq('status','active');if(error)throw error;S.list=l||[]}
+}
+async function render(keep){
+  if(S.me&&!tabs[S.me.role].some(t=>t[0]===S.screen)&&['welcome','login','type','signup'].includes(S.screen)){S.screen=home();S.hist=[]}
+  try{await data()}catch(e){toast(e.message)}
+  const sc=S.screen,show=S.me&&!['verify','profile','hire'].includes(sc);
+  $('#app').innerHTML=V[sc]()+(show?`<nav class="tabs">${tabs[S.me.role].map(t=>`<button class="${t[0]===sc?'on':''}" onclick="S.hist=[];go('${t[0]}',1)"><b>${t[1]}</b>${t[2]}</button>`).join('')}</nav>`:'');
+  if(sc==='settings'){const th=document.documentElement.getAttribute('data-theme')||'';$('#th').value=th}
+  if(keep){const q=$('#q');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
+}
+const doLogin=()=>run(async()=>{
+  const{error}=await sb.auth.signInWithPassword({email:val('em').trim(),password:val('pw')});if(error)throw error;
+  await loadMe();if(!S.me)throw new Error('This account cannot sign in here.');S.hist=[];S.list=[];go(home(),1);
+});
+const doSignup=()=>run(async()=>{
+  const w=S.role==='worker';
+  if(!val('n').trim()||!val('em').trim()||!val('ph').trim()||!val('st')||(w&&!val('oc')))throw new Error('Please fill in all required fields.');
+  if(val('pw').length<8)throw new Error('Password must be at least 8 characters.');
+  if(!$('#ag').checked)throw new Error('Please accept the Terms and Privacy Policy.');
+  const{data,error}=await sb.auth.signUp({email:val('em').trim(),password:val('pw'),options:{data:{full_name:val('n').trim(),role:S.role}}});if(error)throw error;
+  if(!data.session)return toast('Check your email to confirm your account, then log in.');
+  const row={id:data.user.id,role:S.role,full_name:val('n').trim(),phone:val('ph').trim(),state:val('st'),city:val('ci').trim()};
+  if(w){row[P.cat]=val('oc');row[P.exp]=Number(val('ex'))||0;row[P.rate]=Number(val('rt'))||null}
+  const{error:e2}=await sb.from(T.profiles).upsert(row);if(e2)throw e2;
+  await loadMe();S.hist=[];go(home(),1);
+});
+const doVerify=()=>run(async()=>{
+  const f1=$('#f1').files[0],f2=$('#f2').files[0];
+  if(!val('vid'))throw new Error('Choose your ID type.');if(!f1||!f2)throw new Error('Add your ID photo and a selfie.');
+  if(!$('#vc').checked)throw new Error('Please give consent so we can check your documents.');
+  for(const f of[f1,f2])if(f.size>8*1024*1024)throw new Error('Each file must be under 8 MB.');
+  const up=async(f,k)=>{const p=`${S.me.id}/${Date.now()}-${k}-${f.name.replace(/[^\w.\-]/g,'_')}`;const{error}=await sb.storage.from('id-documents').upload(p,f);if(error)throw error;return p};
+  const a=await up(f1,'id'),b=await up(f2,'selfie');
+  const{error}=await sb.from(T.verif).insert({worker_id:S.me.id,id_type:val('vid'),id_doc_path:a,selfie_path:b,consent_at:new Date().toISOString()});
+  if(error)throw error;toast('Submitted. Status: under review');back();
+});
+const doHire=()=>run(async()=>{
+  if(!val('hd').trim())throw new Error('Describe the job first.');
+  const{error}=await sb.from(T.hire).insert({employer_id:S.me.id,worker_id:S.sel,description:val('hd').trim(),start_date:val('hs')||null,location:val('hl').trim(),offer_ngn:Number(val('hp'))||null});
+  if(error)throw error;toast('Request sent');back();
+});
+async function reqDelete(){if(!confirm('Request deletion of your account?'))return;const{error}=await sb.rpc('request_account_deletion');if(error)throw error;toast('Deletion request recorded')}
+async function doLogout(){await sb.auth.signOut();S={me:null,screen:'welcome',hist:[],list:[],sel:null,f:{c:'All',s:'',q:''},busy:false};render()}
+(async()=>{await loadMe();if(S.me)S.screen=home();render()})();
 </script></body></html>
